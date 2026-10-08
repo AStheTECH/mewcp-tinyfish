@@ -17,7 +17,7 @@
     "wallet": ["get_wallet.md"]
   },
   "validation_rounds": 3,
-  "validation_passed": false,
+  "validation_passed": true,
   "docs_status_written": false,
   "readme": false
 }
