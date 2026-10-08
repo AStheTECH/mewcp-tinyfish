@@ -16,7 +16,7 @@
     "fetch": ["fetch_extract_content.md", "list_fetch_usage.md"],
     "wallet": ["get_wallet.md"]
   },
-  "validation_rounds": 0,
+  "validation_rounds": 3,
   "validation_passed": false,
   "docs_status_written": false,
   "readme": false
