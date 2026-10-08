@@ -48,15 +48,15 @@ def register_runs_tools(mcp: FastMCP) -> None:
         ),
         goal: str | None = Field(
             default=None,
-            description="Filter runs by goal text, case-insensitive partial match. Maximum length 500 characters.",
+            description="Filter runs by goal text, case-insensitive partial match. Maximum length 500 characters. Omit to not filter by goal text.",
         ),
         created_after: str | None = Field(
             default=None,
-            description="Only include runs created after this ISO 8601 timestamp.",
+            description="Only include runs created after this ISO 8601 timestamp. Omit to not filter by a lower bound.",
         ),
         created_before: str | None = Field(
             default=None,
-            description="Only include runs created before this ISO 8601 timestamp.",
+            description="Only include runs created before this ISO 8601 timestamp. Omit to not filter by an upper bound.",
         ),
         sort_direction: str | None = Field(
             default=None,
@@ -119,7 +119,7 @@ def register_runs_tools(mcp: FastMCP) -> None:
         annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=True),
     )
     def get_run(
-        id: str = Field(description="Run ID to retrieve."),
+        id: str = Field(description="Run ID to retrieve. Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
         screenshots: str | None = Field(
             default=None,
             description="Screenshot delivery mode. One of `url` (absolute image URLs), `base64` (inline data URIs), `none` (omit screenshots). Defaults to `url`.",
@@ -164,7 +164,7 @@ def register_runs_tools(mcp: FastMCP) -> None:
         annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=True),
     )
     def cancel_run(
-        id: str = Field(description="Run ID to cancel."),
+        id: str = Field(description="Run ID to cancel. Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
     ) -> RunCancelResult:
         tlog = ToolLogger(logger, "cancel_run")
 
