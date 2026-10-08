@@ -1,0 +1,17 @@
+{
+  "manifest_server_block": true,
+  "planning": true,
+  "infra": false,
+  "tool_groups": {},
+  "built_from": {
+    "automation": ["run_browser_automation_sse.md", "start_automation_async.md"],
+    "runs": ["list_runs.md", "get_run.md", "cancel_run.md"],
+    "search": ["search_web.md", "list_search_usage.md"],
+    "fetch": ["fetch_extract_content.md", "list_fetch_usage.md"],
+    "wallet": ["get_wallet.md"]
+  },
+  "validation_rounds": 0,
+  "validation_passed": false,
+  "docs_status_written": false,
+  "readme": false
+}
