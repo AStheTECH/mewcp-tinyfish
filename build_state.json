@@ -1,8 +1,14 @@
 {
   "manifest_server_block": true,
   "planning": true,
-  "infra": false,
-  "tool_groups": {},
+  "infra": true,
+  "tool_groups": {
+    "automation": true,
+    "runs": true,
+    "search": true,
+    "fetch": true,
+    "wallet": true
+  },
   "built_from": {
     "automation": ["run_browser_automation_sse.md", "start_automation_async.md"],
     "runs": ["list_runs.md", "get_run.md", "cancel_run.md"],
