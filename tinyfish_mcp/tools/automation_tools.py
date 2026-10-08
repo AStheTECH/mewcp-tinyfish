@@ -4,6 +4,7 @@ import json
 import logging
 from typing import Any, Literal
 
+import pydantic
 import requests
 from fastmcp import FastMCP
 from mcp.types import ToolAnnotations
@@ -98,11 +99,11 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         agent_config: dict[str, Any] | None = Field(
             default=None,
-            description="Agent behavior configuration, e.g. `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`.",
+            description="Agent behavior configuration, e.g. `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`. Omit to use the provider's default agent behavior.",
         ),
         capture_config: dict[str, Any] | None = Field(
             default=None,
-            description="Configures which data to capture during the run, e.g. `elements`, `snapshots`, `screenshots`, `recording`, `html`.",
+            description="Configures which data to capture during the run, e.g. `elements`, `snapshots`, `screenshots`, `recording`, `html`. Omit to capture nothing extra beyond the default.",
         ),
         webhook_url: str | None = Field(
             default=None,
@@ -130,7 +131,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         output_schema: dict[str, Any] | None = Field(
             default=None,
-            description="Provider-supported structured-output JSON Schema subset for the run result (e.g. `type`, `properties`, `required`). Unsupported schema fields are rejected before the request is accepted.",
+            description="Provider-supported structured-output JSON Schema subset for the run result (e.g. `type`, `properties`, `required`). Unsupported schema fields are rejected before the request is accepted. Omit to skip structured-output validation.",
         ),
     ) -> BrowserAutomationSseResult:
         tlog = ToolLogger(logger, "run_browser_automation_sse")
@@ -210,14 +211,24 @@ def register_automation_tools(mcp: FastMCP) -> None:
                                 message="Automation stream ended before completion"),
             )
 
+        try:
+            result = BrowserAutomationSseResult(
+                success=True, statusCode=200,
+                data=BrowserAutomationSseData(
+                    run_id=run_id, status=status_value, result=result_value,
+                    streaming_url=streaming_url, progress=progress, timestamp=timestamp,
+                ),
+            )
+        except pydantic.ValidationError as e:  # must precede ValueError — it subclasses it
+            tlog.failure("UPSTREAM_ERROR", "Response validation failed")  # str(e) embeds response field values — never log it
+            return BrowserAutomationSseResult(
+                success=False, statusCode=502, retriable=False,
+                error=ToolError(code="UPSTREAM_ERROR",
+                                message="Upstream response did not match the expected schema"),
+            )
+
         tlog.success()
-        return BrowserAutomationSseResult(
-            success=True, statusCode=200,
-            data=BrowserAutomationSseData(
-                run_id=run_id, status=status_value, result=result_value,
-                streaming_url=streaming_url, progress=progress, timestamp=timestamp,
-            ),
-        )
+        return result
 
     @mcp.tool(
         name="start_automation_async",
@@ -244,11 +255,11 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         agent_config: dict[str, Any] | None = Field(
             default=None,
-            description="Agent behavior configuration, e.g. `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`.",
+            description="Agent behavior configuration, e.g. `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`. Omit to use the provider's default agent behavior.",
         ),
         capture_config: dict[str, Any] | None = Field(
             default=None,
-            description="Configures which data to capture during the run, e.g. `elements`, `snapshots`, `screenshots`, `recording`, `html`.",
+            description="Configures which data to capture during the run, e.g. `elements`, `snapshots`, `screenshots`, `recording`, `html`. Omit to capture nothing extra beyond the default.",
         ),
         webhook_url: str | None = Field(
             default=None,
@@ -276,7 +287,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         output_schema: dict[str, Any] | None = Field(
             default=None,
-            description="Provider-supported structured-output JSON Schema subset for the run result (e.g. `type`, `properties`, `required`). Unsupported schema fields are rejected before the request is accepted.",
+            description="Provider-supported structured-output JSON Schema subset for the run result (e.g. `type`, `properties`, `required`). Unsupported schema fields are rejected before the request is accepted. Omit to skip structured-output validation.",
         ),
     ) -> AutomationAsyncResult:
         tlog = ToolLogger(logger, "start_automation_async")
