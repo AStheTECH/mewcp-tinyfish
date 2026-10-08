@@ -31,15 +31,8 @@ def register_fetch_tools(mcp: FastMCP) -> None:
         description=(
             "Fetches 1-10 URLs in parallel (rendering JavaScript-heavy pages when needed) and "
             "returns clean extracted content as markdown (default), HTML, or a structured JSON "
-            "document tree. Each URL is processed independently: a per-URL failure (e.g. "
-            "target_http_error, page_not_found, timeout, bot_blocked, login_required, or content "
-            "over the 20MB/50MB size caps) is reported in `errors` without failing the rest of the "
-            "batch. `if_none_match` and `if_modified_since` are only valid when `urls` has exactly "
-            "one entry. `include_selectors`/`exclude_selectors` scope or strip content per page; a "
-            "page where no `include_selectors` entry matches fails with `selector_not_matched` "
-            "(with `candidate_selectors` retry hints) rather than silently returning the full page, "
-            "and selectors are unsupported on URLs that resolve to a direct PDF/CSV download "
-            "(`selector_unsupported`)."
+            "document tree. Each URL is processed independently — a per-URL failure is reported "
+            "in `errors` without failing the rest of the batch."
         ),
         annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True),
     )
