@@ -91,7 +91,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         goal: str = Field(description="Natural language description of what to accomplish on the website."),
         browser_profile: Literal["lite", "stealth"] | None = Field(
             default=None,
-            description="Browser profile for execution. `lite` uses the standard browser; `stealth` uses an anti-detection browser.",
+            description="Browser profile for execution. `lite` uses the standard browser; `stealth` uses an anti-detection browser. Omit to use the provider's default browser profile.",
         ),
         api_integration: str | None = Field(
             default=None,
@@ -115,7 +115,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         use_profile: bool | None = Field(
             default=None,
-            description="Opt in to the default Browser Context Profile when Browser Context Profiles are enabled; silently ignored for legacy callers when the profiles feature is disabled.",
+            description="Opt in to the default Browser Context Profile when Browser Context Profiles are enabled; silently ignored for legacy callers when the profiles feature is disabled. Defaults to false when omitted.",
         ),
         profile_id: str | None = Field(
             default=None,
@@ -247,7 +247,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         goal: str = Field(description="Natural language description of what to accomplish on the website."),
         browser_profile: Literal["lite", "stealth"] | None = Field(
             default=None,
-            description="Browser profile for execution. `lite` uses the standard browser; `stealth` uses an anti-detection browser.",
+            description="Browser profile for execution. `lite` uses the standard browser; `stealth` uses an anti-detection browser. Omit to use the provider's default browser profile.",
         ),
         api_integration: str | None = Field(
             default=None,
@@ -271,7 +271,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         use_profile: bool | None = Field(
             default=None,
-            description="Opt in to the default Browser Context Profile when Browser Context Profiles are enabled; silently ignored for legacy callers when the profiles feature is disabled.",
+            description="Opt in to the default Browser Context Profile when Browser Context Profiles are enabled; silently ignored for legacy callers when the profiles feature is disabled. Defaults to false when omitted.",
         ),
         profile_id: str | None = Field(
             default=None,
@@ -310,8 +310,9 @@ def register_automation_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status < 300:
+                result_data = AutomationAsyncData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return AutomationAsyncResult(success=True, statusCode=status, data=AutomationAsyncData(**data))
+                return AutomationAsyncResult(success=True, statusCode=status, data=result_data)
             return _upstream_err(AutomationAsyncResult, tlog, status, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(AutomationAsyncResult, tlog, exc)
