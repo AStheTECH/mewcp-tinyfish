@@ -126,7 +126,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         proxy_config: dict[str, Any] | None = Field(
             default=None,
-            description="Proxy configuration for the automation run.",
+            description="Proxy configuration for the automation run, as a provider-defined object (no documented sub-keys). Omit to run without a proxy.",
         ),
         output_schema: dict[str, Any] | None = Field(
             default=None,
@@ -272,7 +272,7 @@ def register_automation_tools(mcp: FastMCP) -> None:
         ),
         proxy_config: dict[str, Any] | None = Field(
             default=None,
-            description="Proxy configuration for the automation run.",
+            description="Proxy configuration for the automation run, as a provider-defined object (no documented sub-keys). Omit to run without a proxy.",
         ),
         output_schema: dict[str, Any] | None = Field(
             default=None,
