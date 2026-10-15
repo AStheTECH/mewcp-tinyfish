@@ -11,7 +11,7 @@
     "groups": {
       "automation": {
         "file": "automation_tools.py",
-        "doc_source": "automation/run_browser_automation_sse.md, automation/start_automation_async.md",
+        "doc_source": "automation/run_browser_automation_sse.md, automation/start_automation_async.md, automation/run_browser_automation_sync.md",
         "register_fn": "register_automation_tools",
         "tools": {
           "run_browser_automation_sse": {
@@ -69,12 +69,44 @@
               { "name": "error", "type": "object | null" }
             ],
             "schema": { "data": "AutomationAsyncData", "result": "AutomationAsyncResult" }
+          },
+          "run_browser_automation_sync": {
+            "doc_file": "automation/run_browser_automation_sync.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/automation/run",
+            "description": "Executes a browser automation task synchronously and blocks until it completes, returning the final result (success or failure) in a single response.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "url", "type": "string<uri>", "required": true, "description": "Target website URL to automate." },
+              { "name": "goal", "type": "string", "required": true, "description": "Natural language description of what to accomplish on the website. Minimum string length: 1." },
+              { "name": "browser_profile", "type": "enum<string>: lite, stealth", "required": false, "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser." },
+              { "name": "api_integration", "type": "string", "required": false, "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics." },
+              { "name": "agent_config", "type": "object", "required": false, "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`." },
+              { "name": "capture_config", "type": "object", "required": false, "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`." },
+              { "name": "webhook_url", "type": "string<uri>", "required": false, "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS." },
+              { "name": "use_vault", "type": "boolean", "required": false, "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false." },
+              { "name": "use_profile", "type": "boolean", "required": false, "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set." },
+              { "name": "profile_id", "type": "string", "required": false, "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1." },
+              { "name": "credential_item_ids", "type": "string[]", "required": false, "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1." },
+              { "name": "proxy_config", "type": "object", "required": false, "description": "Proxy configuration." },
+              { "name": "output_schema", "type": "object", "required": false, "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`." }
+            ],
+            "response_fields": [
+              { "name": "run_id", "type": "string | null" },
+              { "name": "status", "type": "enum<string>: COMPLETED, FAILED" },
+              { "name": "started_at", "type": "string | null" },
+              { "name": "finished_at", "type": "string | null" },
+              { "name": "num_of_steps", "type": "number | null" },
+              { "name": "result", "type": "object | null" },
+              { "name": "error", "type": "object | null" },
+              { "name": "profile_hint", "type": "object" }
+            ],
+            "schema": { "data": "BrowserAutomationSyncData", "result": "BrowserAutomationSyncResult" }
           }
         }
       },
       "runs": {
         "file": "runs_tools.py",
-        "doc_source": "runs/list_runs.md, runs/get_run.md, runs/cancel_run.md",
+        "doc_source": "runs/list_runs.md, runs/get_run.md, runs/cancel_run.md, runs/get_step_screenshot.md, runs/get_step_html_snapshot.md",
         "register_fn": "register_runs_tools",
         "tools": {
           "list_runs": {
@@ -161,6 +193,36 @@
               { "name": "message", "type": "string | null" }
             ],
             "schema": { "data": "RunCancelData", "result": "RunCancelResult" }
+          },
+          "get_step_screenshot": {
+            "doc_file": "runs/get_step_screenshot.md",
+            "endpoint": "GET https://agent.tinyfish.ai/v1/runs/{id}/steps/{stepId}/screenshot",
+            "description": "Serve the JPEG screenshot captured at a specific step via API key, returning binary image data.",
+            "tier": "GET",
+            "params": [
+              { "name": "id", "type": "string", "required": true, "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." },
+              { "name": "stepId", "type": "string", "required": true, "description": "Step ID (event ID). Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." }
+            ],
+            "response_fields": [
+              { "name": "content_type", "type": "string" },
+              { "name": "image_base64", "type": "string" }
+            ],
+            "schema": { "data": "StepScreenshotData", "result": "StepScreenshotResult" }
+          },
+          "get_step_html_snapshot": {
+            "doc_file": "runs/get_step_html_snapshot.md",
+            "endpoint": "GET https://agent.tinyfish.ai/v1/runs/{id}/steps/{stepId}/html",
+            "description": "Serve the full-page HTML snapshot captured at a specific step via API key, returning raw HTML.",
+            "tier": "GET",
+            "params": [
+              { "name": "id", "type": "string", "required": true, "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." },
+              { "name": "stepId", "type": "string", "required": true, "description": "Step ID (event ID). Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." }
+            ],
+            "response_fields": [
+              { "name": "content_type", "type": "string" },
+              { "name": "html", "type": "string" }
+            ],
+            "schema": { "data": "StepHtmlSnapshotData", "result": "StepHtmlSnapshotResult" }
           }
         }
       },
@@ -336,7 +398,7 @@
       },
       "wallet": {
         "file": "wallet_tools.py",
-        "doc_source": "wallet/get_wallet.md",
+        "doc_source": "wallet/get_wallet.md, wallet/request_wallet_topup.md, wallet/confirm_wallet_topup.md",
         "register_fn": "register_wallet_tools",
         "tools": {
           "get_wallet": {
@@ -355,6 +417,426 @@
               { "name": "agent_top_up_url", "type": "string (uri)" }
             ],
             "schema": { "data": "WalletData", "result": "WalletResult" }
+          },
+          "request_wallet_topup": {
+            "doc_file": "wallet/request_wallet_topup.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/wallet/top-up",
+            "description": "Starts a wallet top-up for a given USD amount and returns a payment challenge — this call alone never moves money.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "amount", "type": "string", "required": true, "description": "Amount to add in USD, from 10.00 to 500.00, in whole cents. Must be passed again, identical, to confirm_wallet_topup." }
+            ],
+            "response_fields": [
+              { "name": "challenge_id", "type": "string" },
+              { "name": "realm", "type": "string" },
+              { "name": "method", "type": "string" },
+              { "name": "intent", "type": "string" },
+              { "name": "request_token", "type": "string" },
+              { "name": "expires_at", "type": "string" },
+              { "name": "payment_header_name", "type": "string" },
+              { "name": "type", "type": "string | null" },
+              { "name": "title", "type": "string | null" },
+              { "name": "detail", "type": "string | null" },
+              { "name": "hint", "type": "string | null" }
+            ],
+            "schema": { "data": "WalletTopupChallengeData", "result": "WalletTopupChallengeResult" }
+          },
+          "confirm_wallet_topup": {
+            "doc_file": "wallet/confirm_wallet_topup.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/wallet/top-up",
+            "description": "Settles a wallet top-up previously started with request_wallet_topup, using a payment_authorization credential obtained from the caller's own external MPP-speaking wallet for that specific challenge.",
+            "tier": "UPDATE",
+            "params": [
+              { "name": "amount", "type": "string", "required": true, "description": "Must be identical to the amount passed to request_wallet_topup for the challenge being paid." },
+              { "name": "payment_authorization", "type": "string (header: Payment-Authorization)", "required": true, "description": "The payment credential for the challenge from request_wallet_topup, format `Payment <base64url>`." }
+            ],
+            "response_fields": [
+              { "name": "status", "type": "enum<string>: settled, pending" },
+              { "name": "amount", "type": "string" },
+              { "name": "currency", "type": "enum<string> (USD)" },
+              { "name": "payment_reference", "type": "string" },
+              { "name": "ledger_entry_id", "type": "string | null" },
+              { "name": "available_balance", "type": "string | null" },
+              { "name": "hint", "type": "string" }
+            ],
+            "schema": { "data": "WalletTopupConfirmData", "result": "WalletTopupConfirmResult" }
+          }
+        }
+      },
+      "browser_context_profiles": {
+        "file": "browser_context_profiles_tools.py",
+        "doc_source": "browser_context_profiles/create_browser_context_profile.md, browser_context_profiles/delete_browser_context_profile.md, browser_context_profiles/update_browser_context_profile.md, browser_context_profiles/create_profile_setup_session.md, browser_context_profiles/cancel_profile_setup_session.md, browser_context_profiles/save_profile_setup_session.md, browser_context_profiles/upload_browser_context_profile_state.md",
+        "register_fn": "register_browser_context_profiles_tools",
+        "tools": {
+          "create_browser_context_profile": {
+            "doc_file": "browser_context_profiles/create_browser_context_profile.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/profiles",
+            "description": "Creates a new Browser Context Profile.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "name", "type": "string", "required": true, "description": "Required string length: 1 - 100." },
+              { "name": "set_as_default", "type": "boolean", "required": false, "description": "" },
+              { "name": "proxy_country_code", "type": "enum<string> | null", "required": false, "description": "Available options: US, GB, CA, AU, DE, FR, IT, ES, NL, JP, SG, BR, IN, null." }
+            ],
+            "response_fields": [
+              { "name": "id", "type": "string" },
+              { "name": "name", "type": "string" },
+              { "name": "created_at", "type": "string" },
+              { "name": "proxy_country_code", "type": "enum<string> | null" },
+              { "name": "is_default", "type": "boolean" },
+              { "name": "fingerprint_seed", "type": "string" },
+              { "name": "domain_count", "type": "integer" },
+              { "name": "updated_at", "type": "string" }
+            ],
+            "schema": { "data": "CreateProfileData", "result": "CreateProfileResult" }
+          },
+          "delete_browser_context_profile": {
+            "doc_file": "browser_context_profiles/delete_browser_context_profile.md",
+            "endpoint": "DELETE https://agent.tinyfish.ai/v1/profiles/{profileId}",
+            "description": "Permanently deletes a Browser Context Profile.",
+            "tier": "DELETE",
+            "params": [
+              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." }
+            ],
+            "response_fields": [
+              { "name": "deleted", "type": "boolean" }
+            ],
+            "schema": { "data": "DeleteProfileData", "result": "DeleteProfileResult" }
+          },
+          "update_browser_context_profile": {
+            "doc_file": "browser_context_profiles/update_browser_context_profile.md",
+            "endpoint": "PATCH https://agent.tinyfish.ai/v1/profiles/{profileId}",
+            "description": "Updates Browser Context Profile metadata.",
+            "tier": "UPDATE",
+            "params": [
+              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
+              { "name": "name", "type": "string", "required": false, "description": "Required string length (if provided): 1 - 100." },
+              { "name": "set_as_default", "type": "boolean", "required": false, "description": "" },
+              { "name": "proxy_country_code", "type": "enum<string> | null", "required": false, "description": "Available options: US, GB, CA, AU, DE, FR, IT, ES, NL, JP, SG, BR, IN, null." }
+            ],
+            "response_fields": [
+              { "name": "id", "type": "string" },
+              { "name": "name", "type": "string" },
+              { "name": "created_at", "type": "string" },
+              { "name": "domains", "type": "object[]" },
+              { "name": "proxy_country_code", "type": "enum<string> | null" },
+              { "name": "is_default", "type": "boolean" },
+              { "name": "fingerprint_seed", "type": "string" },
+              { "name": "domain_count", "type": "integer" },
+              { "name": "updated_at", "type": "string" }
+            ],
+            "schema": { "data": "UpdateProfileData", "result": "UpdateProfileResult" }
+          },
+          "create_profile_setup_session": {
+            "doc_file": "browser_context_profiles/create_profile_setup_session.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/profiles/{profileId}/setup-session",
+            "description": "Starts a temporary setup browser for a Browser Context Profile.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
+              { "name": "url", "type": "string", "required": false, "description": "Target URL the browser session will navigate to on startup. Bare domains are automatically prefixed with https://. If omitted, the browser starts at about:blank." },
+              { "name": "timeout_seconds", "type": "integer | null", "required": false, "description": "Inactivity timeout in seconds (5-86400). If omitted, null, or greater than your plan maximum, the plan maximum is used." }
+            ],
+            "response_fields": [
+              { "name": "session_id", "type": "string" },
+              { "name": "cdp_url", "type": "string<uri>" },
+              { "name": "base_url", "type": "string<uri>" },
+              { "name": "timeout_seconds", "type": "integer" },
+              { "name": "expires_at", "type": "string" }
+            ],
+            "schema": { "data": "CreateProfileSetupSessionData", "result": "CreateProfileSetupSessionResult" }
+          },
+          "cancel_profile_setup_session": {
+            "doc_file": "browser_context_profiles/cancel_profile_setup_session.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/profiles/{profileId}/setup-session/cancel",
+            "description": "Cancels a running Browser Context Profile setup session and discards unsaved setup state.",
+            "tier": "UPDATE",
+            "params": [
+              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
+              { "name": "session_id", "type": "string", "required": true, "description": "Minimum string length: 1." }
+            ],
+            "response_fields": [
+              { "name": "cancelled", "type": "boolean" }
+            ],
+            "schema": { "data": "CancelProfileSetupSessionData", "result": "CancelProfileSetupSessionResult" }
+          },
+          "save_profile_setup_session": {
+            "doc_file": "browser_context_profiles/save_profile_setup_session.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/profiles/{profileId}/save",
+            "description": "Captures cookies, local storage, and session storage from a running setup session into the Browser Context Profile.",
+            "tier": "UPDATE",
+            "params": [
+              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
+              { "name": "session_id", "type": "string", "required": true, "description": "Minimum string length: 1." },
+              { "name": "signed_in_sites", "type": "string[]", "required": false, "description": "Sites the user says they signed into during this setup, as hosts or URLs. Maximum array length: 20. Maximum string length: 253." }
+            ],
+            "response_fields": [
+              { "name": "domains_updated", "type": "string[]" },
+              { "name": "domains_failed", "type": "string[]" },
+              { "name": "cookie_count", "type": "integer" },
+              { "name": "domains_skipped", "type": "object" },
+              { "name": "pages_captured", "type": "integer" },
+              { "name": "target_reads_skipped", "type": "integer" },
+              { "name": "cleanup_failed", "type": "boolean" },
+              { "name": "cleanup_kind", "type": "string" },
+              { "name": "signed_in_sites", "type": "string[]" },
+              { "name": "sign_in", "type": "object" },
+              { "name": "user_confirmed_sites", "type": "object" }
+            ],
+            "schema": { "data": "SaveProfileSetupSessionData", "result": "SaveProfileSetupSessionResult" }
+          },
+          "upload_browser_context_profile_state": {
+            "doc_file": "browser_context_profiles/upload_browser_context_profile_state.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/profiles/{profileId}/upload",
+            "description": "Uploads cookies, local storage, and session storage directly into a Browser Context Profile.",
+            "tier": "UPDATE",
+            "params": [
+              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
+              { "name": "cookies", "type": "object[]", "required": true, "description": "Maximum array length: 3000. Each entry: name, value, domain, path (required); httpOnly, secure, expires, sourceScheme, sourcePort, partitionKey (optional)." },
+              { "name": "localStorage", "type": "object[]", "required": false, "description": "Maximum array length: 100. Each entry: origin, items (list of {name, value})." },
+              { "name": "sessionStorage", "type": "object[]", "required": false, "description": "Maximum array length: 100. Each entry: origin, items (list of {name, value})." }
+            ],
+            "response_fields": [
+              { "name": "domains_updated", "type": "string[]" },
+              { "name": "domains_failed", "type": "string[]" },
+              { "name": "cookie_count", "type": "integer" },
+              { "name": "domains_skipped", "type": "object" }
+            ],
+            "schema": { "data": "UploadProfileStateData", "result": "UploadProfileStateResult" }
+          }
+        }
+      },
+      "vault": {
+        "file": "vault_tools.py",
+        "doc_source": "vault/connect_vault_provider.md, vault/disconnect_vault_provider.md, vault/sync_vault_items.md",
+        "register_fn": "register_vault_tools",
+        "tools": {
+          "connect_vault_provider": {
+            "doc_file": "vault/connect_vault_provider.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/vault/connections",
+            "description": "Connect a supported password manager and immediately sync display-safe credential metadata.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "provider", "type": "enum<string> (1password, bitwarden)", "required": true, "description": "Vault provider identifier." },
+              { "name": "token", "type": "string", "required": false, "description": "1Password service account token. Required when provider is 1password." },
+              { "name": "clientId", "type": "string", "required": false, "description": "Bitwarden client ID. Required when provider is bitwarden." },
+              { "name": "clientSecret", "type": "string", "required": false, "description": "Bitwarden client secret. Required when provider is bitwarden." },
+              { "name": "masterPassword", "type": "string", "required": false, "description": "Bitwarden master password. Required when provider is bitwarden." },
+              { "name": "serverUrl", "type": "string<uri>", "required": false, "description": "Optional self-hosted Bitwarden server URL." }
+            ],
+            "response_fields": [
+              { "name": "connectionId", "type": "string" },
+              { "name": "connected", "type": "enum<boolean> (true)" },
+              { "name": "provider", "type": "enum<string> (1password, bitwarden)" },
+              { "name": "items", "type": "object[]" }
+            ],
+            "schema": { "data": "ConnectVaultProviderData", "result": "ConnectVaultProviderResult" }
+          },
+          "disconnect_vault_provider": {
+            "doc_file": "vault/disconnect_vault_provider.md",
+            "endpoint": "DELETE https://agent.tinyfish.ai/v1/vault/connections/{connectionId}",
+            "description": "Disconnect a vault provider and remove its stored enabled items.",
+            "tier": "DELETE",
+            "params": [
+              { "name": "connectionId", "type": "string", "required": true, "description": "Path parameter." }
+            ],
+            "response_fields": [
+              { "name": "disconnected", "type": "enum<boolean> (true)" },
+              { "name": "connectionId", "type": "string" }
+            ],
+            "schema": { "data": "DisconnectVaultProviderData", "result": "DisconnectVaultProviderResult" }
+          },
+          "sync_vault_items": {
+            "doc_file": "vault/sync_vault_items.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/vault/items/sync",
+            "description": "Sync items from connected providers and return merged item state plus sync counters.",
+            "tier": "UPDATE_MANY",
+            "params": [],
+            "response_fields": [
+              { "name": "items", "type": "object[]" },
+              { "name": "sync_summary", "type": "object" }
+            ],
+            "schema": { "data": "SyncVaultItemsData", "result": "SyncVaultItemsResult" }
+          }
+        }
+      },
+      "research": {
+        "file": "research_tools.py",
+        "doc_source": "research/run_research_sse.md, research/start_research_async.md, research/attach_research_progress.md, research/list_research_runs.md, research/get_research_run.md, research/cancel_research_run.md",
+        "register_fn": "register_research_tools",
+        "tools": {
+          "run_research_sse": {
+            "doc_file": "research/run_research_sse.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/automation/run-research",
+            "description": "Search, evaluate sources, and synthesize a cited report from a natural-language query.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "query", "type": "string", "required": true, "description": "Research question. Length 1-2000." },
+              { "name": "mode", "type": "enum<string> (auto, standard, deep, max)", "required": false, "description": "Depth of research. Omitted selects deep; legacy auto selects standard." },
+              { "name": "stream", "type": "boolean", "required": false, "description": "Emit report text through synthesis_delta events as it is written." },
+              { "name": "output_language", "type": "string", "required": false, "description": "BCP 47 language tag for the report." },
+              { "name": "weak_sources_enabled", "type": "boolean", "required": false, "description": "Allow relevant social and community sources." },
+              { "name": "domain_type", "type": "enum<string> (web, news, research_paper)", "required": false, "description": "Source pool to research over." },
+              { "name": "after_date", "type": "string<date>", "required": false, "description": "Include results on or after this date (YYYY-MM-DD)." },
+              { "name": "before_date", "type": "string<date>", "required": false, "description": "Include results on or before this date (YYYY-MM-DD)." },
+              { "name": "recency_minutes", "type": "integer", "required": false, "description": "Include results from the last 1-5,256,000 minutes. Not combinable with date filters." },
+              { "name": "domain_filter", "type": "object", "required": false, "description": "Domain preferences. Each list accepts at most 150 entries." },
+              { "name": "prior_run_id", "type": "string", "required": false, "description": "Seed this run with a completed report and its evidence." },
+              { "name": "session_id", "type": "string<uuid>", "required": false, "description": "Continue a standard-mode session. Mutually exclusive with prior_run_id." }
+            ],
+            "response_fields": [
+              { "name": "research_run_id", "type": "string" },
+              { "name": "result", "type": "string | null" },
+              { "name": "citations", "type": "string[]" },
+              { "name": "iterations_seen", "type": "integer[]" }
+            ],
+            "schema": { "data": "ResearchStreamData", "result": "ResearchStreamResult" }
+          },
+          "start_research_async": {
+            "doc_file": "research/start_research_async.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/automation/run-research-async",
+            "description": "Enqueue research and return its ID after durable dispatch.",
+            "tier": "CREATE",
+            "params": [
+              { "name": "query", "type": "string", "required": true, "description": "Research question. Length 1-2000." },
+              { "name": "mode", "type": "enum<string> (auto, standard, deep, max)", "required": false, "description": "Depth of research. Omitted selects deep; legacy auto selects standard." },
+              { "name": "stream", "type": "boolean", "required": false, "description": "Emit report text through synthesis_delta events as it is written." },
+              { "name": "output_language", "type": "string", "required": false, "description": "BCP 47 language tag for the report." },
+              { "name": "weak_sources_enabled", "type": "boolean", "required": false, "description": "Allow relevant social and community sources." },
+              { "name": "domain_type", "type": "enum<string> (web, news, research_paper)", "required": false, "description": "Source pool to research over." },
+              { "name": "after_date", "type": "string<date>", "required": false, "description": "Include results on or after this date (YYYY-MM-DD)." },
+              { "name": "before_date", "type": "string<date>", "required": false, "description": "Include results on or before this date (YYYY-MM-DD)." },
+              { "name": "recency_minutes", "type": "integer", "required": false, "description": "Include results from the last 1-5,256,000 minutes. Not combinable with date filters." },
+              { "name": "domain_filter", "type": "object", "required": false, "description": "Domain preferences. Each list accepts at most 150 entries." },
+              { "name": "prior_run_id", "type": "string", "required": false, "description": "Seed this run with a completed report and its evidence." },
+              { "name": "session_id", "type": "string<uuid>", "required": false, "description": "Continue a standard-mode session. Mutually exclusive with prior_run_id." }
+            ],
+            "response_fields": [
+              { "name": "research_run_id", "type": "string<uuid>" },
+              { "name": "error", "type": "object | null" }
+            ],
+            "schema": { "data": "StartResearchAsyncData", "result": "StartResearchAsyncResult" }
+          },
+          "attach_research_progress": {
+            "doc_file": "research/attach_research_progress.md",
+            "endpoint": "GET https://agent.tinyfish.ai/v1/research-run/{research_run_id}/events",
+            "description": "Reconnect to a research run's live progress stream, resuming with Last-Event-ID when provided.",
+            "tier": "GET",
+            "params": [
+              { "name": "research_run_id", "type": "string", "required": true, "description": "Research run identifier. Path parameter." },
+              { "name": "last_event_id", "type": "string (header: Last-Event-ID)", "required": false, "description": "Resume the stream after this event ID." }
+            ],
+            "response_fields": [
+              { "name": "research_run_id", "type": "string" },
+              { "name": "result", "type": "string | null" },
+              { "name": "citations", "type": "string[]" },
+              { "name": "iterations_seen", "type": "integer[]" }
+            ],
+            "schema": { "data": "ResearchStreamData", "result": "ResearchStreamResult" }
+          },
+          "list_research_runs": {
+            "doc_file": "research/list_research_runs.md",
+            "endpoint": "GET https://agent.tinyfish.ai/v1/research-run",
+            "description": "List saved research runs with optional filtering by status, query text, and date range.",
+            "tier": "GET",
+            "params": [
+              { "name": "status", "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)", "required": false, "description": "Filter by research run status." },
+              { "name": "query", "type": "string", "required": false, "description": "Filter by query text (case-insensitive partial match). Max length 500." },
+              { "name": "created_after", "type": "string<date-time>", "required": false, "description": "Filter runs created after this ISO 8601 timestamp." },
+              { "name": "created_before", "type": "string<date-time>", "required": false, "description": "Filter runs created before this ISO 8601 timestamp." },
+              { "name": "sort_direction", "type": "enum<string> (asc, desc)", "required": false, "description": "Sort order by created_at. Default desc." },
+              { "name": "cursor", "type": "string", "required": false, "description": "Cursor for pagination (from previous response). Must be replayed with the same sort_direction used to generate it." },
+              { "name": "limit", "type": "integer", "required": false, "description": "Maximum number of results to return (1-100). Default 20." }
+            ],
+            "response_fields": [
+              { "name": "data[].research_run_id", "type": "string" },
+              { "name": "data[].status", "type": "enum<string>" },
+              { "name": "data[].query", "type": "string" },
+              { "name": "data[].quick_result", "type": "object | null" },
+              { "name": "data[].quick_result_summary", "type": "string | null" },
+              { "name": "data[].deep_result", "type": "object | null" },
+              { "name": "data[].run_ids", "type": "string[]" },
+              { "name": "data[].created_at", "type": "string | null" },
+              { "name": "data[].completed_at", "type": "string | null" },
+              { "name": "data[].error", "type": "object | null" },
+              { "name": "data[].research_plan", "type": "object | null" },
+              { "name": "data[].evidence", "type": "object[] | null" },
+              { "name": "data[].iterations", "type": "integer | null" },
+              { "name": "pagination.total", "type": "integer" },
+              { "name": "pagination.next_cursor", "type": "string" },
+              { "name": "pagination.has_more", "type": "boolean" }
+            ],
+            "schema": { "data": "ListResearchRunsData", "result": "ListResearchRunsResult" }
+          },
+          "get_research_run": {
+            "doc_file": "research/get_research_run.md",
+            "endpoint": "GET https://agent.tinyfish.ai/v1/research-run/{research_run_id}",
+            "description": "Retrieve one saved research run, including the plan, evidence, and per-iteration working state.",
+            "tier": "GET",
+            "params": [
+              { "name": "research_run_id", "type": "string", "required": true, "description": "Research run identifier. Path parameter." }
+            ],
+            "response_fields": [
+              { "name": "research_run_id", "type": "string" },
+              { "name": "status", "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)" },
+              { "name": "query", "type": "string" },
+              { "name": "quick_result", "type": "object | null" },
+              { "name": "quick_result_summary", "type": "string | null" },
+              { "name": "deep_result", "type": "object | null" },
+              { "name": "run_ids", "type": "string[]" },
+              { "name": "created_at", "type": "string | null" },
+              { "name": "completed_at", "type": "string | null" },
+              { "name": "error", "type": "object | null" },
+              { "name": "research_plan", "type": "object | null" },
+              { "name": "evidence", "type": "object[] | null" },
+              { "name": "iterations", "type": "integer | null" }
+            ],
+            "schema": { "data": "ResearchRunData", "result": "GetResearchRunResult" }
+          },
+          "cancel_research_run": {
+            "doc_file": "research/cancel_research_run.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/research-run/{research_run_id}/cancel",
+            "description": "Cancel a running research run.",
+            "tier": "UPDATE",
+            "params": [
+              { "name": "research_run_id", "type": "string", "required": true, "description": "Research run identifier. Path parameter." }
+            ],
+            "response_fields": [
+              { "name": "research_run_id", "type": "string" },
+              { "name": "status", "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)" },
+              { "name": "cancelled", "type": "boolean" }
+            ],
+            "schema": { "data": "CancelResearchRunData", "result": "CancelResearchRunResult" }
+          }
+        }
+      },
+      "browser": {
+        "file": "browser_tools.py",
+        "doc_source": "browser/list_browser_session_usage.md",
+        "register_fn": "register_browser_tools",
+        "tools": {
+          "list_browser_session_usage": {
+            "doc_file": "browser/list_browser_session_usage.md",
+            "endpoint": "GET https://api.browser.tinyfish.ai/usage",
+            "description": "Lists Tetra browser session usage for the authenticated user, returning session telemetry including duration, data transfer, mode, and status.",
+            "tier": "GET",
+            "params": [
+              { "name": "session_id", "type": "string", "required": false, "description": "" },
+              { "name": "start_after", "type": "string<date-time>", "required": false, "description": "" },
+              { "name": "end_before", "type": "string<date-time>", "required": false, "description": "" },
+              { "name": "status", "type": "enum<string> (running, ended)", "required": false, "description": "" },
+              { "name": "limit", "type": "integer", "required": false, "description": "Default: 100. Range: 1-1000." },
+              { "name": "page", "type": "integer", "required": false, "description": "Default: 1. Range: x >= 1." }
+            ],
+            "response_fields": [
+              { "name": "items", "type": "object[]" },
+              { "name": "total", "type": "integer" },
+              { "name": "limit", "type": "integer" },
+              { "name": "page", "type": "integer" },
+              { "name": "total_pages", "type": "integer" },
+              { "name": "has_more", "type": "boolean" }
+            ],
+            "schema": { "data": "ListBrowserSessionUsageData", "result": "ListBrowserSessionUsageResult" }
           }
         }
       }
