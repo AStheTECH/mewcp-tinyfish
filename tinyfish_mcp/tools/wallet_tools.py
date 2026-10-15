@@ -38,8 +38,9 @@ def register_wallet_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status < 300:
+                result_data = WalletData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return WalletResult(success=True, statusCode=status, data=WalletData(**data))
+                return WalletResult(success=True, statusCode=status, data=result_data)
             return _upstream_err(WalletResult, tlog, status, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(WalletResult, tlog, exc)

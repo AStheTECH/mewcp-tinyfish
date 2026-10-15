@@ -193,8 +193,9 @@ def register_fetch_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status_code < 300:
+                result_data = ExtractContentData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return ExtractContentResult(success=True, statusCode=status_code, data=ExtractContentData(**data))
+                return ExtractContentResult(success=True, statusCode=status_code, data=result_data)
             return _upstream_err(ExtractContentResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(ExtractContentResult, tlog, exc)
@@ -256,8 +257,9 @@ def register_fetch_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status_code < 300:
+                result_data = FetchUsageListData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return FetchUsageListResult(success=True, statusCode=status_code, data=FetchUsageListData(**data))
+                return FetchUsageListResult(success=True, statusCode=status_code, data=result_data)
             return _upstream_err(FetchUsageListResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(FetchUsageListResult, tlog, exc)

@@ -103,8 +103,9 @@ def register_runs_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status_code < 300:
+                result_data = RunListData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return RunListResult(success=True, statusCode=status_code, data=RunListData(**data))
+                return RunListResult(success=True, statusCode=status_code, data=result_data)
             return _upstream_err(RunListResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(RunListResult, tlog, exc)
@@ -147,8 +148,9 @@ def register_runs_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status_code < 300:
+                result_data = RunData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return RunResult(success=True, statusCode=status_code, data=RunData(**data))
+                return RunResult(success=True, statusCode=status_code, data=result_data)
             return _upstream_err(RunResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(RunResult, tlog, exc)
@@ -177,8 +179,9 @@ def register_runs_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status_code < 300:
+                result_data = RunCancelData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return RunCancelResult(success=True, statusCode=status_code, data=RunCancelData(**data))
+                return RunCancelResult(success=True, statusCode=status_code, data=result_data)
             return _upstream_err(RunCancelResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(RunCancelResult, tlog, exc)

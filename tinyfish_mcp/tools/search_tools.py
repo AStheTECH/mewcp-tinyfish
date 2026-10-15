@@ -177,8 +177,9 @@ def register_search_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status < 300:
+                result_data = WebSearchData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return WebSearchResult(success=True, statusCode=status, data=WebSearchData(**data))
+                return WebSearchResult(success=True, statusCode=status, data=result_data)
             return _upstream_err(WebSearchResult, tlog, status, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(WebSearchResult, tlog, exc)
@@ -236,9 +237,9 @@ def register_search_tools(mcp: FastMCP) -> None:
                 timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
             )
             if 200 <= status_code < 300:
+                result_data = SearchUsageListData(**data)  # construct before logging success — can still raise ValidationError
                 tlog.success()
-                return SearchUsageListResult(success=True, statusCode=status_code,
-                                              data=SearchUsageListData(**data))
+                return SearchUsageListResult(success=True, statusCode=status_code, data=result_data)
             return _upstream_err(SearchUsageListResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(SearchUsageListResult, tlog, exc)
