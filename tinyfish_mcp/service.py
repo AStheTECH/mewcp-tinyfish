@@ -41,11 +41,15 @@ def api_request(
     body: dict[str, Any] | None = None,
     params: dict[str, Any] | None = None,
     timeout: tuple[int, int] | None = None,
+    extra_headers: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], int, int | None]:
     if timeout is None:
         timeout = (CONNECT_TIMEOUT, READ_TIMEOUT)
     url = endpoint  # manifest endpoints are already complete absolute URLs — provider has no single API base
-    resp = requests.request(method=method, url=url, headers=_auth_headers(),
+    headers = _auth_headers()
+    if extra_headers:
+        headers.update(extra_headers)
+    resp = requests.request(method=method, url=url, headers=headers,
                             json=body, params=params, timeout=timeout)
     try:
         data = resp.json()

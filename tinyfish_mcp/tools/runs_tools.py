@@ -1,8 +1,11 @@
-"""Runs group: list_runs, get_run, cancel_run."""
+"""Runs group: list_runs, get_run, cancel_run, get_step_screenshot, get_step_html_snapshot."""
 
+import base64
 import logging
 import re
 
+import pydantic
+import requests
 from fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 from pydantic import Field
@@ -10,6 +13,7 @@ from pydantic import Field
 from .. import service
 from ..config import CONNECT_TIMEOUT, READ_TIMEOUT
 from ..logging_utils import ToolLogger
+from ..schemas import ToolError
 from ..schemas.runs import (
     RunCancelData,
     RunCancelResult,
@@ -17,7 +21,12 @@ from ..schemas.runs import (
     RunListData,
     RunListResult,
     RunResult,
+    StepHtmlSnapshotData,
+    StepHtmlSnapshotResult,
+    StepScreenshotData,
+    StepScreenshotResult,
 )
+from ..service import _auth_headers
 from ._helpers import _err, _handle_request_exc, _upstream_err
 
 logger = logging.getLogger("tinyfish-mcp.tools.runs")
@@ -25,6 +34,8 @@ logger = logging.getLogger("tinyfish-mcp.tools.runs")
 RUNS_URL = "https://agent.tinyfish.ai/v1/runs"
 RUN_URL = "https://agent.tinyfish.ai/v1/runs/{id}"
 RUN_CANCEL_URL = "https://agent.tinyfish.ai/v1/runs/{id}/cancel"
+STEP_SCREENSHOT_URL = "https://agent.tinyfish.ai/v1/runs/{id}/steps/{stepId}/screenshot"
+STEP_HTML_SNAPSHOT_URL = "https://agent.tinyfish.ai/v1/runs/{id}/steps/{stepId}/html"
 
 _ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
 _RUN_STATUSES = ("PENDING", "RUNNING", "COMPLETED", "FAILED", "CANCELLED")
@@ -185,3 +196,99 @@ def register_runs_tools(mcp: FastMCP) -> None:
             return _upstream_err(RunCancelResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(RunCancelResult, tlog, exc)
+
+    @mcp.tool(
+        name="get_step_screenshot",
+        description=(
+            "Retrieves the JPEG screenshot captured at a specific automation run step, "
+            "authenticated with the API key. Returns the image as base64-encoded bytes "
+            "with its content type."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True),
+    )
+    def get_step_screenshot(
+        id: str = Field(description="Run ID. Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
+        stepId: str = Field(description="Step ID (event ID). Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
+    ) -> StepScreenshotResult:
+        tlog = ToolLogger(logger, "get_step_screenshot")
+
+        if not _ID_PATTERN.fullmatch(id):
+            return _err(StepScreenshotResult, tlog, "VALIDATION_ERROR", "id must match ^[A-Za-z0-9_-]+$", 400)
+        if not _ID_PATTERN.fullmatch(stepId):
+            return _err(StepScreenshotResult, tlog, "VALIDATION_ERROR", "stepId must match ^[A-Za-z0-9_-]+$", 400)
+
+        url = STEP_SCREENSHOT_URL.format(id=id, stepId=stepId)
+        try:
+            resp = requests.get(url, headers=_auth_headers(), timeout=(CONNECT_TIMEOUT, READ_TIMEOUT))
+        except Exception as exc:
+            return _handle_request_exc(StepScreenshotResult, tlog, exc)
+
+        if not 200 <= resp.status_code < 300:
+            try:
+                err_data = resp.json()
+            except Exception:
+                err_data = {"error": resp.text or "Empty response body"}
+            return _upstream_err(StepScreenshotResult, tlog, resp.status_code, err_data)
+
+        try:
+            result_data = StepScreenshotData(
+                content_type=resp.headers.get("Content-Type", "image/jpeg"),
+                image_base64=base64.b64encode(resp.content).decode("ascii"),
+            )
+        except pydantic.ValidationError:
+            tlog.failure("UPSTREAM_ERROR", "Response validation failed")  # str(e) embeds response field values — never log it
+            return StepScreenshotResult(
+                success=False, statusCode=502, retriable=False,
+                error=ToolError(code="UPSTREAM_ERROR", message="Upstream response did not match the expected schema"),
+            )
+
+        tlog.success()
+        return StepScreenshotResult(success=True, statusCode=resp.status_code, data=result_data)
+
+    @mcp.tool(
+        name="get_step_html_snapshot",
+        description=(
+            "Retrieves the full-page HTML snapshot captured at a specific automation run step, "
+            "authenticated with the API key. Only available when the run was started with "
+            "`capture_config.html: true`."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True),
+    )
+    def get_step_html_snapshot(
+        id: str = Field(description="Run ID. Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
+        stepId: str = Field(description="Step ID (event ID). Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
+    ) -> StepHtmlSnapshotResult:
+        tlog = ToolLogger(logger, "get_step_html_snapshot")
+
+        if not _ID_PATTERN.fullmatch(id):
+            return _err(StepHtmlSnapshotResult, tlog, "VALIDATION_ERROR", "id must match ^[A-Za-z0-9_-]+$", 400)
+        if not _ID_PATTERN.fullmatch(stepId):
+            return _err(StepHtmlSnapshotResult, tlog, "VALIDATION_ERROR", "stepId must match ^[A-Za-z0-9_-]+$", 400)
+
+        url = STEP_HTML_SNAPSHOT_URL.format(id=id, stepId=stepId)
+        try:
+            resp = requests.get(url, headers=_auth_headers(), timeout=(CONNECT_TIMEOUT, READ_TIMEOUT))
+        except Exception as exc:
+            return _handle_request_exc(StepHtmlSnapshotResult, tlog, exc)
+
+        if not 200 <= resp.status_code < 300:
+            try:
+                err_data = resp.json()
+            except Exception:
+                err_data = {"error": resp.text or "Empty response body"}
+            return _upstream_err(StepHtmlSnapshotResult, tlog, resp.status_code, err_data)
+
+        try:
+            result_data = StepHtmlSnapshotData(
+                content_type=resp.headers.get("Content-Type", "text/html"),
+                html=resp.text,
+            )
+        except pydantic.ValidationError:
+            tlog.failure("UPSTREAM_ERROR", "Response validation failed")  # str(e) embeds response field values — never log it
+            return StepHtmlSnapshotResult(
+                success=False, statusCode=502, retriable=False,
+                error=ToolError(code="UPSTREAM_ERROR", message="Upstream response did not match the expected schema"),
+            )
+
+        tlog.success()
+        return StepHtmlSnapshotResult(success=True, statusCode=resp.status_code, data=result_data)

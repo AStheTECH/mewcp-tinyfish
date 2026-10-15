@@ -28,3 +28,28 @@ class AutomationAsyncData(BaseModel):
 
 class AutomationAsyncResult(ToolResult):
     data: AutomationAsyncData | None = None
+
+
+class BrowserAutomationSyncData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    run_id: str | None = None
+    status: str = Field(description="Final status of the run. One of `COMPLETED`, `FAILED`.")
+    started_at: str | None = None
+    finished_at: str | None = None
+    num_of_steps: int | None = Field(
+        default=None,
+        description="Number of steps taken during the automation. Null while the run is still in progress.",
+    )
+    result: dict[str, Any] | None = Field(
+        default=None, description="Structured JSON result extracted from the automation. Null if the run failed."
+    )
+    error: dict[str, Any] | None = Field(default=None, description="Error details. Null if the run succeeded.")
+    profile_hint: dict[str, Any] | None = Field(
+        default=None,
+        description="Nudge suggesting a Browser Context Profile setup when a failed run is likely solvable that way. Omitted when not applicable.",
+    )
+
+
+class BrowserAutomationSyncResult(ToolResult):
+    data: BrowserAutomationSyncData | None = None

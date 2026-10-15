@@ -93,3 +93,25 @@ class RunCancelData(BaseModel):
 
 class RunCancelResult(ToolResult):
     data: RunCancelData | None = None
+
+
+class StepScreenshotData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    content_type: str = Field(description="MIME type of the returned image. Always `image/jpeg`.")
+    image_base64: str = Field(description="Base64-encoded JPEG screenshot bytes captured at this step.")
+
+
+class StepScreenshotResult(ToolResult):
+    data: StepScreenshotData | None = None
+
+
+class StepHtmlSnapshotData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    content_type: str = Field(description="MIME type of the returned snapshot. Always `text/html`.")
+    html: str = Field(description="Raw HTML of the full-page snapshot captured at this step.")
+
+
+class StepHtmlSnapshotResult(ToolResult):
+    data: StepHtmlSnapshotData | None = None

@@ -1,4 +1,4 @@
-"""Automation group: run_browser_automation_sse, start_automation_async"""
+"""Automation group: run_browser_automation_sse, start_automation_async, run_browser_automation_sync"""
 
 import json
 import logging
@@ -19,6 +19,8 @@ from ..schemas.automation import (
     AutomationAsyncResult,
     BrowserAutomationSseData,
     BrowserAutomationSseResult,
+    BrowserAutomationSyncData,
+    BrowserAutomationSyncResult,
 )
 from ..service import _auth_headers
 from ._helpers import _err, _handle_request_exc, _upstream_err
@@ -27,6 +29,7 @@ logger = logging.getLogger("tinyfish-mcp.tools.automation")
 
 RUN_SSE_ENDPOINT = "https://agent.tinyfish.ai/v1/automation/run-sse"
 RUN_ASYNC_ENDPOINT = "https://agent.tinyfish.ai/v1/automation/run-async"
+RUN_SYNC_ENDPOINT = "https://agent.tinyfish.ai/v1/automation/run"
 
 
 def _validate_automation_params(result_class, tlog, goal, webhook_url, use_vault, profile_id, credential_item_ids):
@@ -316,3 +319,88 @@ def register_automation_tools(mcp: FastMCP) -> None:
             return _upstream_err(AutomationAsyncResult, tlog, status, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(AutomationAsyncResult, tlog, exc)
+
+    @mcp.tool(
+        name="run_browser_automation_sync",
+        description=(
+            "Executes a browser automation task synchronously, blocking until it finishes, and "
+            "returns the final status, result, and error in one response. Runs created this way "
+            "cannot be cancelled — use `start_automation_async` or `run_browser_automation_sse` "
+            "instead if you need cancellation support."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=True),
+    )
+    def run_browser_automation_sync(
+        url: str = Field(description="Target website URL to automate."),
+        goal: str = Field(description="Natural language description of what to accomplish on the website."),
+        browser_profile: Literal["lite", "stealth"] | None = Field(
+            default=None,
+            description="Browser profile for execution. `lite` uses the standard browser; `stealth` uses an anti-detection browser. Omit to use the provider's default browser profile.",
+        ),
+        api_integration: str | None = Field(
+            default=None,
+            description='Name of the integration making this API call (e.g. "dify", "zapier", "n8n"), used for analytics.',
+        ),
+        agent_config: dict[str, Any] | None = Field(
+            default=None,
+            description="Agent behavior configuration, e.g. `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`. Omit to use the provider's default agent behavior.",
+        ),
+        capture_config: dict[str, Any] | None = Field(
+            default=None,
+            description="Configures which data to capture during the run, e.g. `elements`, `snapshots`, `screenshots`, `recording`, `html`. Omit to capture nothing extra beyond the default.",
+        ),
+        webhook_url: str | None = Field(
+            default=None,
+            description="HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS.",
+        ),
+        use_vault: bool | None = Field(
+            default=None,
+            description="Opt in to include enabled vault credentials for this run. Defaults to false when omitted.",
+        ),
+        use_profile: bool | None = Field(
+            default=None,
+            description="Opt in to the default Browser Context Profile when Browser Context Profiles are enabled; silently ignored for legacy callers when the profiles feature is disabled. Defaults to false when omitted.",
+        ),
+        profile_id: str | None = Field(
+            default=None,
+            description="Browser Context Profile ID to use when `use_profile` is true.",
+        ),
+        credential_item_ids: list[str] | None = Field(
+            default=None,
+            description="Scopes vault credentials to specific credential URIs. Requires `use_vault` to be true; if omitted while `use_vault` is true, all enabled vault items are used.",
+        ),
+        proxy_config: dict[str, Any] | None = Field(
+            default=None,
+            description="Proxy configuration for the automation run, as a provider-defined object (no documented sub-keys). Omit to run without a proxy.",
+        ),
+        output_schema: dict[str, Any] | None = Field(
+            default=None,
+            description="Provider-supported structured-output JSON Schema subset for the run result (e.g. `type`, `properties`, `required`). Unsupported schema fields are rejected before the request is accepted. Omit to skip structured-output validation.",
+        ),
+    ) -> BrowserAutomationSyncResult:
+        tlog = ToolLogger(logger, "run_browser_automation_sync")
+
+        err = _validate_automation_params(
+            BrowserAutomationSyncResult, tlog, goal, webhook_url, use_vault, profile_id, credential_item_ids,
+        )
+        if err:
+            return err
+
+        body = _build_automation_body(
+            url, goal, browser_profile, api_integration, agent_config, capture_config,
+            webhook_url, use_vault, use_profile, profile_id, credential_item_ids,
+            proxy_config, output_schema,
+        )
+
+        try:
+            data, status, retry_after = service.api_request(
+                "POST", RUN_SYNC_ENDPOINT, body=body,
+                timeout=(CONNECT_TIMEOUT, 600),  # blocks until the automation finishes, not the READ_TIMEOUT default
+            )
+            if 200 <= status < 300:
+                result_data = BrowserAutomationSyncData(**data)  # construct before logging success — can still raise ValidationError
+                tlog.success()
+                return BrowserAutomationSyncResult(success=True, statusCode=status, data=result_data)
+            return _upstream_err(BrowserAutomationSyncResult, tlog, status, data, retry_after)
+        except Exception as exc:
+            return _handle_request_exc(BrowserAutomationSyncResult, tlog, exc)
