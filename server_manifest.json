@@ -4,7 +4,7 @@
     "name": "mewcp-tinyfish",
     "package": "tinyfish_mcp",
     "auth": "static",
-    "version": "v1.0.0",
+    "version": "v1.1.0",
     "api_base": null
   },
   "tools": {

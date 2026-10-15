@@ -7,14 +7,37 @@
     "runs": true,
     "search": true,
     "fetch": true,
-    "wallet": true
+    "wallet": true,
+    "browser_context_profiles": true,
+    "vault": true,
+    "research": true,
+    "browser": true
   },
   "built_from": {
-    "automation": ["run_browser_automation_sse.md", "start_automation_async.md"],
-    "runs": ["list_runs.md", "get_run.md", "cancel_run.md"],
+    "automation": ["run_browser_automation_sse.md", "start_automation_async.md", "run_browser_automation_sync.md"],
+    "runs": ["list_runs.md", "get_run.md", "cancel_run.md", "get_step_screenshot.md", "get_step_html_snapshot.md"],
     "search": ["search_web.md", "list_search_usage.md"],
     "fetch": ["fetch_extract_content.md", "list_fetch_usage.md"],
-    "wallet": ["get_wallet.md"]
+    "wallet": ["get_wallet.md", "request_wallet_topup.md", "confirm_wallet_topup.md"],
+    "browser_context_profiles": [
+      "create_browser_context_profile.md",
+      "delete_browser_context_profile.md",
+      "update_browser_context_profile.md",
+      "create_profile_setup_session.md",
+      "cancel_profile_setup_session.md",
+      "save_profile_setup_session.md",
+      "upload_browser_context_profile_state.md"
+    ],
+    "vault": ["connect_vault_provider.md", "disconnect_vault_provider.md", "sync_vault_items.md"],
+    "research": [
+      "run_research_sse.md",
+      "start_research_async.md",
+      "attach_research_progress.md",
+      "list_research_runs.md",
+      "get_research_run.md",
+      "cancel_research_run.md"
+    ],
+    "browser": ["list_browser_session_usage.md"]
   },
   "validation_rounds": 3,
   "validation_passed": true,
