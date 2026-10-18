@@ -130,3 +130,13 @@ class UploadProfileStateData(BaseModel):
 
 class UploadProfileStateResult(ToolResult):
     data: UploadProfileStateData | None = None
+
+
+class DeleteProfileDomainData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    deleted: bool
+
+
+class DeleteProfileDomainResult(ToolResult):
+    data: DeleteProfileDomainData | None = None

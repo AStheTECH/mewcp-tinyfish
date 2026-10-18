@@ -20,6 +20,8 @@ from ..schemas.browser_context_profiles import (
     CreateProfileSetupSessionData,
     CreateProfileSetupSessionResult,
     DeleteProfileData,
+    DeleteProfileDomainData,
+    DeleteProfileDomainResult,
     DeleteProfileResult,
     SaveProfileSetupSessionData,
     SaveProfileSetupSessionResult,
@@ -38,6 +40,7 @@ PROFILE_SETUP_SESSION_URL = "https://agent.tinyfish.ai/v1/profiles/{profileId}/s
 PROFILE_SETUP_SESSION_CANCEL_URL = "https://agent.tinyfish.ai/v1/profiles/{profileId}/setup-session/cancel"
 PROFILE_SAVE_URL = "https://agent.tinyfish.ai/v1/profiles/{profileId}/save"
 PROFILE_UPLOAD_URL = "https://agent.tinyfish.ai/v1/profiles/{profileId}/upload"
+PROFILE_DOMAIN_URL = "https://agent.tinyfish.ai/v1/profiles/{profileId}/domains/{domain}"
 
 _PROXY_COUNTRY_CODES = ("US", "GB", "CA", "AU", "DE", "FR", "IT", "ES", "NL", "JP", "SG", "BR", "IN")
 
@@ -377,3 +380,40 @@ def register_browser_context_profiles_tools(mcp: FastMCP) -> None:
             return _upstream_err(UploadProfileStateResult, tlog, status, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(UploadProfileStateResult, tlog, exc)
+
+    @mcp.tool(
+        name="delete_profile_domain",
+        description=(
+            "DESTRUCTIVE — REQUIRES EXPLICIT USER CONFIRMATION BEFORE CALLING. "
+            "Permanently removes one domain's saved state (e.g. cookies for that site) from a "
+            "Browser Context Profile, leaving the rest of the profile untouched. This action is "
+            "irreversible — the saved state for that domain cannot be recovered. NEVER call this "
+            "tool autonomously or as part of an automated flow. You MUST stop, tell the user "
+            "exactly which domain will be removed from which profile and that it is permanent, "
+            "and wait for their explicit written confirmation before proceeding."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, openWorldHint=True),
+    )
+    def delete_profile_domain(
+        profileId: str = Field(description="Browser Context Profile ID, e.g. `prof_abc123def4567890`."),
+        domain: str = Field(description="Domain to remove from the profile, e.g. `example.com`."),
+    ) -> DeleteProfileDomainResult:
+        tlog = ToolLogger(logger, "delete_profile_domain")
+
+        if not profileId.strip():
+            return _err(DeleteProfileDomainResult, tlog, "VALIDATION_ERROR", "profileId must not be empty", 400)
+        if not domain.strip():
+            return _err(DeleteProfileDomainResult, tlog, "VALIDATION_ERROR", "domain must not be empty", 400)
+
+        try:
+            data, status, retry_after = service.api_request(
+                "DELETE", PROFILE_DOMAIN_URL.format(profileId=profileId, domain=domain),
+                timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
+            )
+            if 200 <= status < 300:
+                result_data = DeleteProfileDomainData(**data)  # construct before logging success — can still raise ValidationError
+                tlog.success()
+                return DeleteProfileDomainResult(success=True, statusCode=status, data=result_data)
+            return _upstream_err(DeleteProfileDomainResult, tlog, status, data, retry_after)
+        except Exception as exc:
+            return _handle_request_exc(DeleteProfileDomainResult, tlog, exc)
