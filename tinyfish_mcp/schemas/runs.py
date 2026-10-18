@@ -95,6 +95,62 @@ class RunCancelResult(ToolResult):
     data: RunCancelData | None = None
 
 
+class RunBatchItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    run_id: str
+    status: str = Field(description="One of `PENDING`, `RUNNING`, `COMPLETED`, `FAILED`, `CANCELLED`.")
+    goal: str
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None
+    result: dict[str, Any] | None = None
+    error: dict[str, Any] | None = Field(
+        default=None,
+        description="Error details. Null if the run succeeded or is still running.",
+    )
+
+
+class RunBatchGetData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    data: list[RunBatchItem]
+    not_found: list[str] | None = Field(
+        default=None,
+        description="Run IDs that were not found or not owned. Null if all were found.",
+    )
+
+
+class RunBatchGetResult(ToolResult):
+    data: RunBatchGetData | None = None
+
+
+class RunCancelBatchItem(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    run_id: str
+    status: str = Field(description="The run's actual status after the call. E.g. `CANCELLED`, or a terminal status like `COMPLETED`/`FAILED` when the run could not be cancelled.")
+    cancelled_at: str | None = None
+    message: str | None = Field(
+        default=None,
+        description="Explanatory note, e.g. \"Run already finished\". Null when there is nothing to explain.",
+    )
+
+
+class RunBatchCancelData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    results: list[RunCancelBatchItem]
+    not_found: list[str] | None = Field(
+        default=None,
+        description="Run IDs that were not found or not owned. Null if all were found.",
+    )
+
+
+class RunBatchCancelResult(ToolResult):
+    data: RunBatchCancelData | None = None
+
+
 class StepScreenshotData(BaseModel):
     model_config = ConfigDict(extra="allow")
 

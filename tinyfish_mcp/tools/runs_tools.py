@@ -15,6 +15,10 @@ from ..config import CONNECT_TIMEOUT, READ_TIMEOUT
 from ..logging_utils import ToolLogger
 from ..schemas import ToolError
 from ..schemas.runs import (
+    RunBatchCancelData,
+    RunBatchCancelResult,
+    RunBatchGetData,
+    RunBatchGetResult,
     RunCancelData,
     RunCancelResult,
     RunData,
@@ -34,6 +38,8 @@ logger = logging.getLogger("tinyfish-mcp.tools.runs")
 RUNS_URL = "https://agent.tinyfish.ai/v1/runs"
 RUN_URL = "https://agent.tinyfish.ai/v1/runs/{id}"
 RUN_CANCEL_URL = "https://agent.tinyfish.ai/v1/runs/{id}/cancel"
+RUNS_BATCH_URL = "https://agent.tinyfish.ai/v1/runs/batch"
+RUNS_BATCH_CANCEL_URL = "https://agent.tinyfish.ai/v1/runs/batch/cancel"
 STEP_SCREENSHOT_URL = "https://agent.tinyfish.ai/v1/runs/{id}/steps/{stepId}/screenshot"
 STEP_HTML_SNAPSHOT_URL = "https://agent.tinyfish.ai/v1/runs/{id}/steps/{stepId}/html"
 
@@ -196,6 +202,84 @@ def register_runs_tools(mcp: FastMCP) -> None:
             return _upstream_err(RunCancelResult, tlog, status_code, data, retry_after)
         except Exception as exc:
             return _handle_request_exc(RunCancelResult, tlog, exc)
+
+    @mcp.tool(
+        name="get_runs_by_ids",
+        description=(
+            "Retrieves multiple automation runs by ID in a single request, returning each found "
+            "run's status, goal, result, and error alongside a list of any IDs that were not found "
+            "or not owned by the caller. Accepts 1-100 IDs per call."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True),
+    )
+    def get_runs_by_ids(
+        run_ids: list[str] = Field(
+            description="Run IDs to fetch, 1-100 entries. Each must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."
+        ),
+    ) -> RunBatchGetResult:
+        tlog = ToolLogger(logger, "get_runs_by_ids")
+
+        if not (1 <= len(run_ids) <= 100):
+            return _err(RunBatchGetResult, tlog, "VALIDATION_ERROR",
+                        "run_ids must contain between 1 and 100 entries", 400)
+        if not all(_ID_PATTERN.fullmatch(rid) for rid in run_ids):
+            return _err(RunBatchGetResult, tlog, "VALIDATION_ERROR",
+                        "each run_ids entry must match ^[A-Za-z0-9_-]+$", 400)
+
+        try:
+            data, status_code, retry_after = service.api_request(
+                "POST", RUNS_BATCH_URL, body={"run_ids": run_ids},
+                timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
+            )
+            if 200 <= status_code < 300:
+                result_data = RunBatchGetData(**data)  # construct before logging success — can still raise ValidationError
+                tlog.success()
+                return RunBatchGetResult(success=True, statusCode=status_code, data=result_data)
+            return _upstream_err(RunBatchGetResult, tlog, status_code, data, retry_after)
+        except Exception as exc:
+            return _handle_request_exc(RunBatchGetResult, tlog, exc)
+
+    @mcp.tool(
+        name="cancel_runs_by_ids",
+        description=(
+            "DESTRUCTIVE — REQUIRES EXPLICIT USER CONFIRMATION BEFORE CALLING. "
+            "Cancels multiple in-progress automation runs by ID in a single bulk call (1-100 IDs). "
+            "Only runs started via the async or SSE automation endpoints can be cancelled this way. "
+            "This is idempotent per run — a run already in a terminal state (e.g. `COMPLETED`) is "
+            "reported with its actual current status and an explanatory message rather than an "
+            "error — but a per-run before-state is not returned and cannot be recovered from this "
+            "call. NEVER call this tool autonomously or as part of an automated flow. You MUST "
+            "stop, tell the user exactly which runs will be cancelled, and wait for their explicit "
+            "written confirmation before proceeding."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=True, openWorldHint=True),
+    )
+    def cancel_runs_by_ids(
+        run_ids: list[str] = Field(
+            description="Run IDs to cancel, 1-100 entries. Each must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."
+        ),
+    ) -> RunBatchCancelResult:
+        tlog = ToolLogger(logger, "cancel_runs_by_ids")
+
+        if not (1 <= len(run_ids) <= 100):
+            return _err(RunBatchCancelResult, tlog, "VALIDATION_ERROR",
+                        "run_ids must contain between 1 and 100 entries", 400)
+        if not all(_ID_PATTERN.fullmatch(rid) for rid in run_ids):
+            return _err(RunBatchCancelResult, tlog, "VALIDATION_ERROR",
+                        "each run_ids entry must match ^[A-Za-z0-9_-]+$", 400)
+
+        try:
+            data, status_code, retry_after = service.api_request(
+                "POST", RUNS_BATCH_CANCEL_URL, body={"run_ids": run_ids},
+                timeout=(CONNECT_TIMEOUT, READ_TIMEOUT),
+            )
+            if 200 <= status_code < 300:
+                result_data = RunBatchCancelData(**data)  # construct before logging success — can still raise ValidationError
+                tlog.success()
+                return RunBatchCancelResult(success=True, statusCode=status_code, data=result_data)
+            return _upstream_err(RunBatchCancelResult, tlog, status_code, data, retry_after)
+        except Exception as exc:
+            return _handle_request_exc(RunBatchCancelResult, tlog, exc)
 
     @mcp.tool(
         name="get_step_screenshot",
