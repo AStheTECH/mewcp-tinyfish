@@ -35,3 +35,23 @@ class ListBrowserSessionUsageData(BaseModel):
 
 class ListBrowserSessionUsageResult(ToolResult):
     data: ListBrowserSessionUsageData | None = None
+
+
+class CreateBrowserSessionData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    session_id: str = Field(description="Unique identifier for this browser session.")
+    cdp_url: str = Field(
+        description="WebSocket URL for browser connection — pass to Playwright's `connect_over_cdp` or any CDP client."
+    )
+    base_url: str = Field(
+        description="HTTPS base URL for the session — used for session endpoints such as `/pages`."
+    )
+
+
+class CreateBrowserSessionResult(ToolResult):
+    data: CreateBrowserSessionData | None = None
+
+
+class TerminateBrowserSessionResult(ToolResult):
+    pass
