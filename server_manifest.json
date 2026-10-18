@@ -4,7 +4,7 @@
     "name": "mewcp-tinyfish",
     "package": "tinyfish_mcp",
     "auth": "static",
-    "version": "v1.1.0",
+    "version": "v1.2.0",
     "api_base": null
   },
   "tools": {
@@ -20,29 +20,115 @@
             "description": "Executes a browser automation task with Server-Sent Events (SSE) streaming, returning a real-time event stream with automation progress, browser streaming URL, and final results.",
             "tier": "CREATE",
             "params": [
-              { "name": "url", "type": "string<uri>", "required": true, "description": "Target website URL to automate." },
-              { "name": "goal", "type": "string", "required": true, "description": "Natural language description of what to accomplish on the website. Minimum string length: 1." },
-              { "name": "browser_profile", "type": "enum<string>: lite, stealth", "required": false, "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser." },
-              { "name": "api_integration", "type": "string", "required": false, "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics." },
-              { "name": "agent_config", "type": "object", "required": false, "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`." },
-              { "name": "capture_config", "type": "object", "required": false, "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`." },
-              { "name": "webhook_url", "type": "string<uri>", "required": false, "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS." },
-              { "name": "use_vault", "type": "boolean", "required": false, "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false." },
-              { "name": "use_profile", "type": "boolean", "required": false, "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set." },
-              { "name": "profile_id", "type": "string", "required": false, "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1." },
-              { "name": "credential_item_ids", "type": "string[]", "required": false, "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1." },
-              { "name": "proxy_config", "type": "object", "required": false, "description": "Proxy configuration." },
-              { "name": "output_schema", "type": "object", "required": false, "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`." }
+              {
+                "name": "url",
+                "type": "string<uri>",
+                "required": true,
+                "description": "Target website URL to automate."
+              },
+              {
+                "name": "goal",
+                "type": "string",
+                "required": true,
+                "description": "Natural language description of what to accomplish on the website. Minimum string length: 1."
+              },
+              {
+                "name": "browser_profile",
+                "type": "enum<string>: lite, stealth",
+                "required": false,
+                "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser."
+              },
+              {
+                "name": "api_integration",
+                "type": "string",
+                "required": false,
+                "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics."
+              },
+              {
+                "name": "agent_config",
+                "type": "object",
+                "required": false,
+                "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`."
+              },
+              {
+                "name": "capture_config",
+                "type": "object",
+                "required": false,
+                "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`."
+              },
+              {
+                "name": "webhook_url",
+                "type": "string<uri>",
+                "required": false,
+                "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS."
+              },
+              {
+                "name": "use_vault",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false."
+              },
+              {
+                "name": "use_profile",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set."
+              },
+              {
+                "name": "profile_id",
+                "type": "string",
+                "required": false,
+                "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1."
+              },
+              {
+                "name": "credential_item_ids",
+                "type": "string[]",
+                "required": false,
+                "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1."
+              },
+              {
+                "name": "proxy_config",
+                "type": "object",
+                "required": false,
+                "description": "Proxy configuration."
+              },
+              {
+                "name": "output_schema",
+                "type": "object",
+                "required": false,
+                "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`."
+              }
             ],
             "response_fields": [
-              { "name": "run_id", "type": "string" },
-              { "name": "status", "type": "string" },
-              { "name": "result", "type": "object" },
-              { "name": "streaming_url", "type": "string | null" },
-              { "name": "progress", "type": "string[]" },
-              { "name": "timestamp", "type": "string" }
+              {
+                "name": "run_id",
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "type": "string"
+              },
+              {
+                "name": "result",
+                "type": "object"
+              },
+              {
+                "name": "streaming_url",
+                "type": "string | null"
+              },
+              {
+                "name": "progress",
+                "type": "string[]"
+              },
+              {
+                "name": "timestamp",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "BrowserAutomationSseData", "result": "BrowserAutomationSseResult" }
+            "schema": {
+              "data": "BrowserAutomationSseData",
+              "result": "BrowserAutomationSseResult"
+            }
           },
           "start_automation_async": {
             "doc_file": "automation/start_automation_async.md",
@@ -50,25 +136,99 @@
             "description": "Creates and enqueues an automation run, returning the run_id immediately without waiting for completion.",
             "tier": "CREATE",
             "params": [
-              { "name": "url", "type": "string<uri>", "required": true, "description": "Target website URL to automate." },
-              { "name": "goal", "type": "string", "required": true, "description": "Natural language description of what to accomplish on the website. Minimum string length: 1." },
-              { "name": "browser_profile", "type": "enum<string>: lite, stealth", "required": false, "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser." },
-              { "name": "api_integration", "type": "string", "required": false, "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics." },
-              { "name": "agent_config", "type": "object", "required": false, "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`." },
-              { "name": "capture_config", "type": "object", "required": false, "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`." },
-              { "name": "webhook_url", "type": "string<uri>", "required": false, "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS." },
-              { "name": "use_vault", "type": "boolean", "required": false, "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false." },
-              { "name": "use_profile", "type": "boolean", "required": false, "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set." },
-              { "name": "profile_id", "type": "string", "required": false, "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1." },
-              { "name": "credential_item_ids", "type": "string[]", "required": false, "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1." },
-              { "name": "proxy_config", "type": "object", "required": false, "description": "Proxy configuration." },
-              { "name": "output_schema", "type": "object", "required": false, "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`." }
+              {
+                "name": "url",
+                "type": "string<uri>",
+                "required": true,
+                "description": "Target website URL to automate."
+              },
+              {
+                "name": "goal",
+                "type": "string",
+                "required": true,
+                "description": "Natural language description of what to accomplish on the website. Minimum string length: 1."
+              },
+              {
+                "name": "browser_profile",
+                "type": "enum<string>: lite, stealth",
+                "required": false,
+                "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser."
+              },
+              {
+                "name": "api_integration",
+                "type": "string",
+                "required": false,
+                "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics."
+              },
+              {
+                "name": "agent_config",
+                "type": "object",
+                "required": false,
+                "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`."
+              },
+              {
+                "name": "capture_config",
+                "type": "object",
+                "required": false,
+                "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`."
+              },
+              {
+                "name": "webhook_url",
+                "type": "string<uri>",
+                "required": false,
+                "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS."
+              },
+              {
+                "name": "use_vault",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false."
+              },
+              {
+                "name": "use_profile",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set."
+              },
+              {
+                "name": "profile_id",
+                "type": "string",
+                "required": false,
+                "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1."
+              },
+              {
+                "name": "credential_item_ids",
+                "type": "string[]",
+                "required": false,
+                "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1."
+              },
+              {
+                "name": "proxy_config",
+                "type": "object",
+                "required": false,
+                "description": "Proxy configuration."
+              },
+              {
+                "name": "output_schema",
+                "type": "object",
+                "required": false,
+                "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`."
+              }
             ],
             "response_fields": [
-              { "name": "run_id", "type": "string | null" },
-              { "name": "error", "type": "object | null" }
+              {
+                "name": "run_id",
+                "type": "string | null"
+              },
+              {
+                "name": "error",
+                "type": "object | null"
+              }
             ],
-            "schema": { "data": "AutomationAsyncData", "result": "AutomationAsyncResult" }
+            "schema": {
+              "data": "AutomationAsyncData",
+              "result": "AutomationAsyncResult"
+            }
           },
           "run_browser_automation_sync": {
             "doc_file": "automation/run_browser_automation_sync.md",
@@ -76,37 +236,129 @@
             "description": "Executes a browser automation task synchronously and blocks until it completes, returning the final result (success or failure) in a single response.",
             "tier": "CREATE",
             "params": [
-              { "name": "url", "type": "string<uri>", "required": true, "description": "Target website URL to automate." },
-              { "name": "goal", "type": "string", "required": true, "description": "Natural language description of what to accomplish on the website. Minimum string length: 1." },
-              { "name": "browser_profile", "type": "enum<string>: lite, stealth", "required": false, "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser." },
-              { "name": "api_integration", "type": "string", "required": false, "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics." },
-              { "name": "agent_config", "type": "object", "required": false, "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`." },
-              { "name": "capture_config", "type": "object", "required": false, "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`." },
-              { "name": "webhook_url", "type": "string<uri>", "required": false, "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS." },
-              { "name": "use_vault", "type": "boolean", "required": false, "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false." },
-              { "name": "use_profile", "type": "boolean", "required": false, "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set." },
-              { "name": "profile_id", "type": "string", "required": false, "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1." },
-              { "name": "credential_item_ids", "type": "string[]", "required": false, "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1." },
-              { "name": "proxy_config", "type": "object", "required": false, "description": "Proxy configuration." },
-              { "name": "output_schema", "type": "object", "required": false, "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`." }
+              {
+                "name": "url",
+                "type": "string<uri>",
+                "required": true,
+                "description": "Target website URL to automate."
+              },
+              {
+                "name": "goal",
+                "type": "string",
+                "required": true,
+                "description": "Natural language description of what to accomplish on the website. Minimum string length: 1."
+              },
+              {
+                "name": "browser_profile",
+                "type": "enum<string>: lite, stealth",
+                "required": false,
+                "description": "Browser profile for execution. `lite` uses standard browser, `stealth` uses anti-detection browser."
+              },
+              {
+                "name": "api_integration",
+                "type": "string",
+                "required": false,
+                "description": "Name of the integration making this API call (e.g., \"dify\", \"zapier\", \"n8n\"). Used for analytics."
+              },
+              {
+                "name": "agent_config",
+                "type": "object",
+                "required": false,
+                "description": "Agent behavior configuration. Example payload shows: `mode`, `cursor_style`, `max_steps`, `max_duration_seconds`."
+              },
+              {
+                "name": "capture_config",
+                "type": "object",
+                "required": false,
+                "description": "Configure which data to capture during the run. Example payload shows: `elements`, `snapshots`, `screenshots`, `recording`, `html`."
+              },
+              {
+                "name": "webhook_url",
+                "type": "string<uri>",
+                "required": false,
+                "description": "HTTPS URL to receive webhook notifications for run lifecycle events. Must use HTTPS."
+              },
+              {
+                "name": "use_vault",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to vault credentials for this run. When true, enabled vault items are included. Defaults to false."
+              },
+              {
+                "name": "use_profile",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to the default Browser Context Profile if Browser Context Profiles are enabled; legacy callers are silently ignored when the profiles feature is disabled. Returns 400 when enabled but no default profile is set."
+              },
+              {
+                "name": "profile_id",
+                "type": "string",
+                "required": false,
+                "description": "Browser Context Profile ID to use when `use_profile` is true. Minimum string length: 1."
+              },
+              {
+                "name": "credential_item_ids",
+                "type": "string[]",
+                "required": false,
+                "description": "Scope vault credentials to specific credential URIs. Requires `use_vault` to be true. If omitted with `use_vault: true`, all enabled items are used. Minimum array length: 1."
+              },
+              {
+                "name": "proxy_config",
+                "type": "object",
+                "required": false,
+                "description": "Proxy configuration."
+              },
+              {
+                "name": "output_schema",
+                "type": "object",
+                "required": false,
+                "description": "Optional provider-supported structured-output schema subset for the run result. Unsupported fields are rejected before the request is accepted. Example: a JSON Schema object with `type`, `properties`, `required`."
+              }
             ],
             "response_fields": [
-              { "name": "run_id", "type": "string | null" },
-              { "name": "status", "type": "enum<string>: COMPLETED, FAILED" },
-              { "name": "started_at", "type": "string | null" },
-              { "name": "finished_at", "type": "string | null" },
-              { "name": "num_of_steps", "type": "number | null" },
-              { "name": "result", "type": "object | null" },
-              { "name": "error", "type": "object | null" },
-              { "name": "profile_hint", "type": "object" }
+              {
+                "name": "run_id",
+                "type": "string | null"
+              },
+              {
+                "name": "status",
+                "type": "enum<string>: COMPLETED, FAILED"
+              },
+              {
+                "name": "started_at",
+                "type": "string | null"
+              },
+              {
+                "name": "finished_at",
+                "type": "string | null"
+              },
+              {
+                "name": "num_of_steps",
+                "type": "number | null"
+              },
+              {
+                "name": "result",
+                "type": "object | null"
+              },
+              {
+                "name": "error",
+                "type": "object | null"
+              },
+              {
+                "name": "profile_hint",
+                "type": "object"
+              }
             ],
-            "schema": { "data": "BrowserAutomationSyncData", "result": "BrowserAutomationSyncResult" }
+            "schema": {
+              "data": "BrowserAutomationSyncData",
+              "result": "BrowserAutomationSyncResult"
+            }
           }
         }
       },
       "runs": {
         "file": "runs_tools.py",
-        "doc_source": "runs/list_runs.md, runs/get_run.md, runs/cancel_run.md, runs/get_step_screenshot.md, runs/get_step_html_snapshot.md",
+        "doc_source": "runs/list_runs.md, runs/get_run.md, runs/cancel_run.md, runs/get_step_screenshot.md, runs/get_step_html_snapshot.md, runs/get_runs_by_ids.md, runs/cancel_runs_by_ids.md",
         "register_fn": "register_runs_tools",
         "tools": {
           "list_runs": {
@@ -115,37 +367,135 @@
             "description": "List automation runs with optional filtering by status, goal text, and date range. Returns paginated results with total count. Default sort order is newest first.",
             "tier": "GET",
             "params": [
-              { "name": "status", "type": "enum<string>", "required": false, "description": "Filter by run status. Options: `PENDING`, `RUNNING`, `COMPLETED`, `FAILED`, `CANCELLED`." },
-              { "name": "goal", "type": "string", "required": false, "description": "Filter runs by goal text (case-insensitive partial match). Maximum string length: 500." },
-              { "name": "created_after", "type": "string<date-time>", "required": false, "description": "Filter runs created after this ISO 8601 timestamp." },
-              { "name": "created_before", "type": "string<date-time>", "required": false, "description": "Filter runs created before this ISO 8601 timestamp." },
-              { "name": "sort_direction", "type": "enum<string>", "required": false, "description": "Sort order by `created_at`. Options: `asc`, `desc`. Default: `desc`." },
-              { "name": "cursor", "type": "string", "required": false, "description": "Cursor for pagination (from previous response)." },
-              { "name": "limit", "type": "integer", "required": false, "description": "Maximum number of results to return (1-100). Default: 20." }
+              {
+                "name": "status",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Filter by run status. Options: `PENDING`, `RUNNING`, `COMPLETED`, `FAILED`, `CANCELLED`."
+              },
+              {
+                "name": "goal",
+                "type": "string",
+                "required": false,
+                "description": "Filter runs by goal text (case-insensitive partial match). Maximum string length: 500."
+              },
+              {
+                "name": "created_after",
+                "type": "string<date-time>",
+                "required": false,
+                "description": "Filter runs created after this ISO 8601 timestamp."
+              },
+              {
+                "name": "created_before",
+                "type": "string<date-time>",
+                "required": false,
+                "description": "Filter runs created before this ISO 8601 timestamp."
+              },
+              {
+                "name": "sort_direction",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Sort order by `created_at`. Options: `asc`, `desc`. Default: `desc`."
+              },
+              {
+                "name": "cursor",
+                "type": "string",
+                "required": false,
+                "description": "Cursor for pagination (from previous response)."
+              },
+              {
+                "name": "limit",
+                "type": "integer",
+                "required": false,
+                "description": "Maximum number of results to return (1-100). Default: 20."
+              }
             ],
             "response_fields": [
-              { "name": "data[].run_id", "type": "string" },
-              { "name": "data[].status", "type": "enum<string>" },
-              { "name": "data[].goal", "type": "string" },
-              { "name": "data[].created_at", "type": "string" },
-              { "name": "data[].started_at", "type": "string | null" },
-              { "name": "data[].finished_at", "type": "string | null" },
-              { "name": "data[].num_of_steps", "type": "integer | null" },
-              { "name": "data[].result", "type": "object | null" },
-              { "name": "data[].output_schema", "type": "object | null" },
-              { "name": "data[].profile_attached", "type": "boolean" },
-              { "name": "data[].profile_id", "type": "string | null" },
-              { "name": "data[].error", "type": "object | null" },
-              { "name": "data[].streaming_url", "type": "string | null" },
-              { "name": "data[].browser_config", "type": "object | null" },
-              { "name": "data[].video_url", "type": "string | null" },
-              { "name": "data[].steps", "type": "object[]" },
-              { "name": "data[].profile_hint", "type": "object" },
-              { "name": "pagination.total", "type": "integer" },
-              { "name": "pagination.next_cursor", "type": "string" },
-              { "name": "pagination.has_more", "type": "boolean" }
+              {
+                "name": "data[].run_id",
+                "type": "string"
+              },
+              {
+                "name": "data[].status",
+                "type": "enum<string>"
+              },
+              {
+                "name": "data[].goal",
+                "type": "string"
+              },
+              {
+                "name": "data[].created_at",
+                "type": "string"
+              },
+              {
+                "name": "data[].started_at",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].finished_at",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].num_of_steps",
+                "type": "integer | null"
+              },
+              {
+                "name": "data[].result",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].output_schema",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].profile_attached",
+                "type": "boolean"
+              },
+              {
+                "name": "data[].profile_id",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].error",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].streaming_url",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].browser_config",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].video_url",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].steps",
+                "type": "object[]"
+              },
+              {
+                "name": "data[].profile_hint",
+                "type": "object"
+              },
+              {
+                "name": "pagination.total",
+                "type": "integer"
+              },
+              {
+                "name": "pagination.next_cursor",
+                "type": "string"
+              },
+              {
+                "name": "pagination.has_more",
+                "type": "boolean"
+              }
             ],
-            "schema": { "data": "RunListData", "result": "RunListResult" }
+            "schema": {
+              "data": "RunListData",
+              "result": "RunListResult"
+            }
           },
           "get_run": {
             "doc_file": "runs/get_run.md",
@@ -153,30 +503,99 @@
             "description": "Get detailed information about a specific automation run by its ID.",
             "tier": "GET",
             "params": [
-              { "name": "id", "type": "string", "required": true, "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." },
-              { "name": "screenshots", "type": "enum<string>", "required": false, "description": "Screenshot delivery mode. `url`: absolute URLs to screenshot images. `base64`: inline data URIs. `none`: omit screenshots. Default: `url`." },
-              { "name": "html", "type": "enum<string>", "required": false, "description": "HTML snapshot delivery mode. `url`: absolute URLs to HTML snapshot pages (only non-null when `capture_config.html` was enabled). `none`: omit HTML URLs. Default: `url`." }
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`."
+              },
+              {
+                "name": "screenshots",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Screenshot delivery mode. `url`: absolute URLs to screenshot images. `base64`: inline data URIs. `none`: omit screenshots. Default: `url`."
+              },
+              {
+                "name": "html",
+                "type": "enum<string>",
+                "required": false,
+                "description": "HTML snapshot delivery mode. `url`: absolute URLs to HTML snapshot pages (only non-null when `capture_config.html` was enabled). `none`: omit HTML URLs. Default: `url`."
+              }
             ],
             "response_fields": [
-              { "name": "run_id", "type": "string" },
-              { "name": "status", "type": "enum<string>" },
-              { "name": "goal", "type": "string" },
-              { "name": "created_at", "type": "string" },
-              { "name": "started_at", "type": "string | null" },
-              { "name": "finished_at", "type": "string | null" },
-              { "name": "num_of_steps", "type": "integer | null" },
-              { "name": "result", "type": "object | null" },
-              { "name": "output_schema", "type": "object | null" },
-              { "name": "profile_attached", "type": "boolean" },
-              { "name": "profile_id", "type": "string | null" },
-              { "name": "error", "type": "object | null" },
-              { "name": "streaming_url", "type": "string | null" },
-              { "name": "browser_config", "type": "object | null" },
-              { "name": "video_url", "type": "string | null" },
-              { "name": "steps", "type": "object[]" },
-              { "name": "profile_hint", "type": "object" }
+              {
+                "name": "run_id",
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "type": "enum<string>"
+              },
+              {
+                "name": "goal",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "started_at",
+                "type": "string | null"
+              },
+              {
+                "name": "finished_at",
+                "type": "string | null"
+              },
+              {
+                "name": "num_of_steps",
+                "type": "integer | null"
+              },
+              {
+                "name": "result",
+                "type": "object | null"
+              },
+              {
+                "name": "output_schema",
+                "type": "object | null"
+              },
+              {
+                "name": "profile_attached",
+                "type": "boolean"
+              },
+              {
+                "name": "profile_id",
+                "type": "string | null"
+              },
+              {
+                "name": "error",
+                "type": "object | null"
+              },
+              {
+                "name": "streaming_url",
+                "type": "string | null"
+              },
+              {
+                "name": "browser_config",
+                "type": "object | null"
+              },
+              {
+                "name": "video_url",
+                "type": "string | null"
+              },
+              {
+                "name": "steps",
+                "type": "object[]"
+              },
+              {
+                "name": "profile_hint",
+                "type": "object"
+              }
             ],
-            "schema": { "data": "RunData", "result": "RunResult" }
+            "schema": {
+              "data": "RunData",
+              "result": "RunResult"
+            }
           },
           "cancel_run": {
             "doc_file": "runs/cancel_run.md",
@@ -184,15 +603,35 @@
             "description": "Cancel a run by ID. Only runs created via `/v1/automation/run-async` or `/v1/automation/run-sse` can be cancelled; runs created via the synchronous `/v1/automation/run` endpoint cannot be cancelled.",
             "tier": "UPDATE",
             "params": [
-              { "name": "id", "type": "string", "required": true, "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." }
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`."
+              }
             ],
             "response_fields": [
-              { "name": "run_id", "type": "string" },
-              { "name": "status", "type": "enum<string>" },
-              { "name": "cancelled_at", "type": "string | null" },
-              { "name": "message", "type": "string | null" }
+              {
+                "name": "run_id",
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "type": "enum<string>"
+              },
+              {
+                "name": "cancelled_at",
+                "type": "string | null"
+              },
+              {
+                "name": "message",
+                "type": "string | null"
+              }
             ],
-            "schema": { "data": "RunCancelData", "result": "RunCancelResult" }
+            "schema": {
+              "data": "RunCancelData",
+              "result": "RunCancelResult"
+            }
           },
           "get_step_screenshot": {
             "doc_file": "runs/get_step_screenshot.md",
@@ -200,14 +639,33 @@
             "description": "Serve the JPEG screenshot captured at a specific step via API key, returning binary image data.",
             "tier": "GET",
             "params": [
-              { "name": "id", "type": "string", "required": true, "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." },
-              { "name": "stepId", "type": "string", "required": true, "description": "Step ID (event ID). Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." }
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`."
+              },
+              {
+                "name": "stepId",
+                "type": "string",
+                "required": true,
+                "description": "Step ID (event ID). Path parameter. Pattern: `^[A-Za-z0-9_-]+$`."
+              }
             ],
             "response_fields": [
-              { "name": "content_type", "type": "string" },
-              { "name": "image_base64", "type": "string" }
+              {
+                "name": "content_type",
+                "type": "string"
+              },
+              {
+                "name": "image_base64",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "StepScreenshotData", "result": "StepScreenshotResult" }
+            "schema": {
+              "data": "StepScreenshotData",
+              "result": "StepScreenshotResult"
+            }
           },
           "get_step_html_snapshot": {
             "doc_file": "runs/get_step_html_snapshot.md",
@@ -215,16 +673,95 @@
             "description": "Serve the full-page HTML snapshot captured at a specific step via API key, returning raw HTML.",
             "tier": "GET",
             "params": [
-              { "name": "id", "type": "string", "required": true, "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." },
-              { "name": "stepId", "type": "string", "required": true, "description": "Step ID (event ID). Path parameter. Pattern: `^[A-Za-z0-9_-]+$`." }
+              {
+                "name": "id",
+                "type": "string",
+                "required": true,
+                "description": "Run ID. Path parameter. Pattern: `^[A-Za-z0-9_-]+$`."
+              },
+              {
+                "name": "stepId",
+                "type": "string",
+                "required": true,
+                "description": "Step ID (event ID). Path parameter. Pattern: `^[A-Za-z0-9_-]+$`."
+              }
             ],
             "response_fields": [
-              { "name": "content_type", "type": "string" },
-              { "name": "html", "type": "string" }
+              {
+                "name": "content_type",
+                "type": "string"
+              },
+              {
+                "name": "html",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "StepHtmlSnapshotData", "result": "StepHtmlSnapshotResult" }
+            "schema": {
+              "data": "StepHtmlSnapshotData",
+              "result": "StepHtmlSnapshotResult"
+            }
+          },
+          "get_runs_by_ids": {
+            "doc_file": "runs/get_runs_by_ids.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/runs/batch",
+            "description": "Retrieve multiple runs by their IDs in a single request. Returns found runs and lists any IDs that were not found or not owned. Maximum 100 IDs per request.",
+            "tier": "GET",
+            "params": [
+              {
+                "name": "run_ids",
+                "type": "string[]",
+                "required": true,
+                "description": "Array of run IDs to fetch. Length 1-100."
+              }
+            ],
+            "response_fields": [
+              {
+                "name": "data",
+                "type": "object[]"
+              },
+              {
+                "name": "not_found",
+                "type": "string[] | null"
+              }
+            ],
+            "schema": {
+              "data": "RunBatchGetData",
+              "result": "RunBatchGetResult"
+            }
+          },
+          "cancel_runs_by_ids": {
+            "doc_file": "runs/cancel_runs_by_ids.md",
+            "endpoint": "POST https://agent.tinyfish.ai/v1/runs/batch/cancel",
+            "description": "Cancel multiple runs by their IDs in a single request. Returns per-run results including cancelled runs, already-terminal runs, and not-found IDs. Maximum 100 IDs per request. Idempotent.",
+            "tier": "UPDATE_MANY",
+            "params": [
+              {
+                "name": "run_ids",
+                "type": "string[]",
+                "required": true,
+                "description": "Array of run IDs to cancel. Length 1-100."
+              }
+            ],
+            "response_fields": [
+              {
+                "name": "results",
+                "type": "object[]"
+              },
+              {
+                "name": "not_found",
+                "type": "string[] | null"
+              }
+            ],
+            "schema": {
+              "data": "RunBatchCancelData",
+              "result": "RunBatchCancelResult"
+            }
           }
-        }
+        },
+        "built_from": [
+          "get_runs_by_ids.md",
+          "cancel_runs_by_ids.md"
+        ]
       },
       "search": {
         "file": "search_tools.py",
@@ -237,35 +774,143 @@
             "description": "Search the web and get structured results, returning ranked results with titles, snippets, and URLs.",
             "tier": "GET",
             "params": [
-              { "name": "query", "type": "string", "required": true, "description": "Search query. Length 1-2000." },
-              { "name": "purpose", "type": "string", "required": false, "description": "Why this search is being run — the underlying goal or task the results will be used for. Used to better rank results against your intent. Length 1-2000." },
-              { "name": "location", "type": "string", "required": false, "description": "Country code for geo-targeted results." },
-              { "name": "language", "type": "string", "required": false, "description": "Language code for result language." },
-              { "name": "include_domains", "type": "string", "required": false, "description": "Comma-separated list of domains to restrict results to." },
-              { "name": "exclude_domains", "type": "string", "required": false, "description": "Comma-separated list of domains to exclude from results." },
-              { "name": "domain_type", "type": "enum<string>", "required": false, "description": "Type of search to perform: `web` for standard results, `news` for news articles, `research_paper` for academic papers. Defaults to `web`. Options: `web`, `news`, `research_paper`." },
-              { "name": "after_date", "type": "string", "required": false, "description": "Return results after this date (YYYY-MM-DD)." },
-              { "name": "before_date", "type": "string", "required": false, "description": "Return results before this date (YYYY-MM-DD)." },
-              { "name": "recency_minutes", "type": "integer", "required": false, "description": "Return results from the past N minutes (1 to 5,256,000)." },
-              { "name": "pub_year_min", "type": "integer", "required": false, "description": "Return research papers published on or after this year (0-9999, inclusive). Only supported for `domain_type=research_paper`." },
-              { "name": "pub_year_max", "type": "integer", "required": false, "description": "Return research papers published on or before this year (0-9999, inclusive). Only supported for `domain_type=research_paper`." },
-              { "name": "page", "type": "integer | null", "required": false, "description": "Page number for pagination, starting from 0 (max 10)." },
-              { "name": "include_thumbnail", "type": "enum<string>", "required": false, "description": "When `\"true\"`, each result includes a `thumbnail_url` when available. Defaults to false. Options: `true`, `false`." },
-              { "name": "fetch", "type": "string", "required": false, "description": "JSON-encoded fetch configuration object. Maximum string length 256." }
+              {
+                "name": "query",
+                "type": "string",
+                "required": true,
+                "description": "Search query. Length 1-2000."
+              },
+              {
+                "name": "purpose",
+                "type": "string",
+                "required": false,
+                "description": "Why this search is being run \u2014 the underlying goal or task the results will be used for. Used to better rank results against your intent. Length 1-2000."
+              },
+              {
+                "name": "location",
+                "type": "string",
+                "required": false,
+                "description": "Country code for geo-targeted results."
+              },
+              {
+                "name": "language",
+                "type": "string",
+                "required": false,
+                "description": "Language code for result language."
+              },
+              {
+                "name": "include_domains",
+                "type": "string",
+                "required": false,
+                "description": "Comma-separated list of domains to restrict results to."
+              },
+              {
+                "name": "exclude_domains",
+                "type": "string",
+                "required": false,
+                "description": "Comma-separated list of domains to exclude from results."
+              },
+              {
+                "name": "domain_type",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Type of search to perform: `web` for standard results, `news` for news articles, `research_paper` for academic papers. Defaults to `web`. Options: `web`, `news`, `research_paper`."
+              },
+              {
+                "name": "after_date",
+                "type": "string",
+                "required": false,
+                "description": "Return results after this date (YYYY-MM-DD)."
+              },
+              {
+                "name": "before_date",
+                "type": "string",
+                "required": false,
+                "description": "Return results before this date (YYYY-MM-DD)."
+              },
+              {
+                "name": "recency_minutes",
+                "type": "integer",
+                "required": false,
+                "description": "Return results from the past N minutes (1 to 5,256,000)."
+              },
+              {
+                "name": "pub_year_min",
+                "type": "integer",
+                "required": false,
+                "description": "Return research papers published on or after this year (0-9999, inclusive). Only supported for `domain_type=research_paper`."
+              },
+              {
+                "name": "pub_year_max",
+                "type": "integer",
+                "required": false,
+                "description": "Return research papers published on or before this year (0-9999, inclusive). Only supported for `domain_type=research_paper`."
+              },
+              {
+                "name": "page",
+                "type": "integer | null",
+                "required": false,
+                "description": "Page number for pagination, starting from 0 (max 10)."
+              },
+              {
+                "name": "include_thumbnail",
+                "type": "enum<string>",
+                "required": false,
+                "description": "When `\"true\"`, each result includes a `thumbnail_url` when available. Defaults to false. Options: `true`, `false`."
+              },
+              {
+                "name": "fetch",
+                "type": "string",
+                "required": false,
+                "description": "JSON-encoded fetch configuration object. Maximum string length 256."
+              }
             ],
             "response_fields": [
-              { "name": "query", "type": "string" },
-              { "name": "results", "type": "object[]" },
-              { "name": "total_results", "type": "integer" },
-              { "name": "page", "type": "integer" },
-              { "name": "request_id", "type": "string" },
-              { "name": "results[].position", "type": "integer" },
-              { "name": "results[].site_name", "type": "string" },
-              { "name": "results[].snippet", "type": "string" },
-              { "name": "results[].title", "type": "string" },
-              { "name": "results[].url", "type": "string" }
+              {
+                "name": "query",
+                "type": "string"
+              },
+              {
+                "name": "results",
+                "type": "object[]"
+              },
+              {
+                "name": "total_results",
+                "type": "integer"
+              },
+              {
+                "name": "page",
+                "type": "integer"
+              },
+              {
+                "name": "request_id",
+                "type": "string"
+              },
+              {
+                "name": "results[].position",
+                "type": "integer"
+              },
+              {
+                "name": "results[].site_name",
+                "type": "string"
+              },
+              {
+                "name": "results[].snippet",
+                "type": "string"
+              },
+              {
+                "name": "results[].title",
+                "type": "string"
+              },
+              {
+                "name": "results[].url",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "WebSearchData", "result": "WebSearchResult" }
+            "schema": {
+              "data": "WebSearchData",
+              "result": "WebSearchResult"
+            }
           },
           "list_search_usage": {
             "doc_file": "search/list_search_usage.md",
@@ -273,30 +918,103 @@
             "description": "List search usage records for the authenticated user, returning paginated results with query details, status, and result counts.",
             "tier": "GET",
             "params": [
-              { "name": "start_after", "type": "string<date-time>", "required": false, "description": "" },
-              { "name": "end_before", "type": "string<date-time>", "required": false, "description": "" },
-              { "name": "status", "type": "enum<string>", "required": false, "description": "Options: `completed`, `failed`." },
-              { "name": "limit", "type": "integer", "required": false, "description": "Default 100. Required range 1-1000." },
-              { "name": "page", "type": "integer", "required": false, "description": "Default 1. Required range x >= 1." }
+              {
+                "name": "start_after",
+                "type": "string<date-time>",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "end_before",
+                "type": "string<date-time>",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "status",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Options: `completed`, `failed`."
+              },
+              {
+                "name": "limit",
+                "type": "integer",
+                "required": false,
+                "description": "Default 100. Required range 1-1000."
+              },
+              {
+                "name": "page",
+                "type": "integer",
+                "required": false,
+                "description": "Default 1. Required range x >= 1."
+              }
             ],
             "response_fields": [
-              { "name": "items", "type": "object[]" },
-              { "name": "total", "type": "integer" },
-              { "name": "limit", "type": "integer" },
-              { "name": "page", "type": "integer" },
-              { "name": "total_pages", "type": "integer" },
-              { "name": "has_more", "type": "boolean" },
-              { "name": "items[].id", "type": "integer" },
-              { "name": "items[].request_id", "type": "string" },
-              { "name": "items[].query", "type": "string" },
-              { "name": "items[].status_code", "type": "integer" },
-              { "name": "items[].result_count", "type": "integer" },
-              { "name": "items[].results", "type": "object[]" },
-              { "name": "items[].cached", "type": "boolean | null" },
-              { "name": "items[].response_size_bytes", "type": "integer" },
-              { "name": "items[].created_at", "type": "string" }
+              {
+                "name": "items",
+                "type": "object[]"
+              },
+              {
+                "name": "total",
+                "type": "integer"
+              },
+              {
+                "name": "limit",
+                "type": "integer"
+              },
+              {
+                "name": "page",
+                "type": "integer"
+              },
+              {
+                "name": "total_pages",
+                "type": "integer"
+              },
+              {
+                "name": "has_more",
+                "type": "boolean"
+              },
+              {
+                "name": "items[].id",
+                "type": "integer"
+              },
+              {
+                "name": "items[].request_id",
+                "type": "string"
+              },
+              {
+                "name": "items[].query",
+                "type": "string"
+              },
+              {
+                "name": "items[].status_code",
+                "type": "integer"
+              },
+              {
+                "name": "items[].result_count",
+                "type": "integer"
+              },
+              {
+                "name": "items[].results",
+                "type": "object[]"
+              },
+              {
+                "name": "items[].cached",
+                "type": "boolean | null"
+              },
+              {
+                "name": "items[].response_size_bytes",
+                "type": "integer"
+              },
+              {
+                "name": "items[].created_at",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "SearchUsageListData", "result": "SearchUsageListResult" }
+            "schema": {
+              "data": "SearchUsageListData",
+              "result": "SearchUsageListResult"
+            }
           }
         }
       },
@@ -311,48 +1029,191 @@
             "description": "Fetches web pages, renders JavaScript-heavy pages when needed, and returns clean extracted content in your preferred format.",
             "tier": "GET",
             "params": [
-              { "name": "urls", "type": "string<uri>[]", "required": true, "description": "Array of URLs to fetch (1-10). All URLs are fetched in parallel. Each URL is processed independently — if one fails, others still return successfully. Errors are reported per-URL in the `errors` array." },
-              { "name": "purpose", "type": "string", "required": false, "description": "Why these URLs are being fetched — the underlying goal or task the content will be used for. Used to better tailor fetching and extraction to your intent. (1-2000 characters)" },
-              { "name": "format", "type": "enum<string>", "required": false, "description": "Output format for extracted content. `markdown` (default) is ideal for LLM consumption. `html` returns cleaned semantic HTML. `json` returns a structured document tree. Available options: `markdown`, `html`, `json`. Default: `markdown`." },
-              { "name": "links", "type": "boolean", "required": false, "description": "Extract all outbound links from each page. Useful for discovering related pages or navigating to specific content. Links are returned as absolute URLs in the `links` array of each result. Default: `false`." },
-              { "name": "image_links", "type": "boolean", "required": false, "description": "Extract all image URLs from each page. Useful for finding visual content or media assets. Image links are returned as absolute URLs in the `image_links` array of each result. Default: `false`." },
-              { "name": "page_metadata", "type": "boolean", "required": false, "description": "Return page-head metadata for each page in the `page_metadata` object of each result: canonical URL, favicon, robots directive, generator, viewport, keywords, all Open Graph (`og`), Twitter card (`twitter`), and article tags, and remaining named meta tags under `other`. Useful for SEO/technical audits and link-preview generation. Default: `false`." },
-              { "name": "ttl", "type": "integer", "required": false, "description": "Caller freshness tolerance in seconds for the cached entry. Omit (default) for unlimited tolerance — any cached entry is acceptable. Set to 0 to prefer a live fetch; a cached entry is still served if the origin's `Cache-Control: max-age` covers its age, or the host is in the small allowlist of operator-pinned never-expire domains. Set to N > 0 to accept a cached entry whose age is below N; the upstream `Cache-Control: max-age` and the never-expire allowlist may extend (never shorten) this tolerance. Range: x >= 0." },
-              { "name": "per_url_timeout_ms", "type": "integer", "required": false, "description": "Wall-clock timeout budget in milliseconds applied independently to each URL. If one URL exceeds this budget, it returns a per-URL timeout error while other URLs in the same request continue. Range: 1 <= x <= 110000." },
-              { "name": "if_none_match", "type": "string", "required": false, "description": "ETag validator from a prior fetch of this URL, forwarded verbatim as the `If-None-Match` header on the origin request. Only valid with a single URL — combining with a batch of URLs returns a 400. tf-fetch does not persist validators; the caller owns replaying them. Minimum string length: 1." },
-              { "name": "if_modified_since", "type": "string", "required": false, "description": "Last-Modified validator from a prior fetch of this URL, forwarded verbatim as the `If-Modified-Since` header on the origin request. Only valid with a single URL — combining with a batch of URLs returns a 400. tf-fetch does not persist validators; the caller owns replaying them. Minimum string length: 1." },
-              { "name": "include_etag_and_last_modified", "type": "boolean", "required": false, "description": "Opt-in to receiving `etag` / `last_modified` validators (and `not_modified` detection) on each result. Defaults to `false` — tf-fetch omits these fields unless requested. Independent of `if_none_match` / `if_modified_since`: works with a single URL or a batch." },
-              { "name": "include_selectors", "type": "string[]", "required": false, "description": "Array of CSS selectors (1-20 entries, each 1-1000 characters) that scope extracted content (`text`, `links`, `image_links`) to elements matching ANY entry, concatenated in document order. Tag selectors cover semantic sections (`main`, `article`, `nav`); entries may themselves use CSS comma-grouping. Selected content is returned verbatim in the requested format (scripts/styles stripped) — automatic boilerplate removal is bypassed. Page-level metadata (`title`, `description`, `language`, `author`, `published_date`) still comes from the full document. When some entries match and others do not, the URL still succeeds and the misses are reported in the result's `unmatched_selectors`. When no entry matches anything, that URL fails with the per-URL error code `selector_not_matched` (carrying `unmatched_selectors` and `candidate_selectors` retry hints) — never a silent full-page fallback. URLs that resolve to direct PDF/CSV downloads fail with `selector_unsupported`. Invalid CSS selector syntax is rejected with a 422. Applied post-fetch: caching and routing are unchanged." },
-              { "name": "exclude_selectors", "type": "string[]", "required": false, "description": "Array of CSS selectors (1-20 entries, each 1-1000 characters) for elements to remove before extraction — applied before `include_selectors` scopes what remains, so it also prunes inside selected regions. Entries may themselves use CSS comma-grouping. Entries that match nothing are a no-op, never an error, but URLs that resolve to direct PDF/CSV downloads fail with `selector_unsupported`. Invalid CSS selector syntax is rejected with a 422. Applied post-fetch: caching and routing are unchanged." }
+              {
+                "name": "urls",
+                "type": "string<uri>[]",
+                "required": true,
+                "description": "Array of URLs to fetch (1-10). All URLs are fetched in parallel. Each URL is processed independently \u2014 if one fails, others still return successfully. Errors are reported per-URL in the `errors` array."
+              },
+              {
+                "name": "purpose",
+                "type": "string",
+                "required": false,
+                "description": "Why these URLs are being fetched \u2014 the underlying goal or task the content will be used for. Used to better tailor fetching and extraction to your intent. (1-2000 characters)"
+              },
+              {
+                "name": "format",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Output format for extracted content. `markdown` (default) is ideal for LLM consumption. `html` returns cleaned semantic HTML. `json` returns a structured document tree. Available options: `markdown`, `html`, `json`. Default: `markdown`."
+              },
+              {
+                "name": "links",
+                "type": "boolean",
+                "required": false,
+                "description": "Extract all outbound links from each page. Useful for discovering related pages or navigating to specific content. Links are returned as absolute URLs in the `links` array of each result. Default: `false`."
+              },
+              {
+                "name": "image_links",
+                "type": "boolean",
+                "required": false,
+                "description": "Extract all image URLs from each page. Useful for finding visual content or media assets. Image links are returned as absolute URLs in the `image_links` array of each result. Default: `false`."
+              },
+              {
+                "name": "page_metadata",
+                "type": "boolean",
+                "required": false,
+                "description": "Return page-head metadata for each page in the `page_metadata` object of each result: canonical URL, favicon, robots directive, generator, viewport, keywords, all Open Graph (`og`), Twitter card (`twitter`), and article tags, and remaining named meta tags under `other`. Useful for SEO/technical audits and link-preview generation. Default: `false`."
+              },
+              {
+                "name": "ttl",
+                "type": "integer",
+                "required": false,
+                "description": "Caller freshness tolerance in seconds for the cached entry. Omit (default) for unlimited tolerance \u2014 any cached entry is acceptable. Set to 0 to prefer a live fetch; a cached entry is still served if the origin's `Cache-Control: max-age` covers its age, or the host is in the small allowlist of operator-pinned never-expire domains. Set to N > 0 to accept a cached entry whose age is below N; the upstream `Cache-Control: max-age` and the never-expire allowlist may extend (never shorten) this tolerance. Range: x >= 0."
+              },
+              {
+                "name": "per_url_timeout_ms",
+                "type": "integer",
+                "required": false,
+                "description": "Wall-clock timeout budget in milliseconds applied independently to each URL. If one URL exceeds this budget, it returns a per-URL timeout error while other URLs in the same request continue. Range: 1 <= x <= 110000."
+              },
+              {
+                "name": "if_none_match",
+                "type": "string",
+                "required": false,
+                "description": "ETag validator from a prior fetch of this URL, forwarded verbatim as the `If-None-Match` header on the origin request. Only valid with a single URL \u2014 combining with a batch of URLs returns a 400. tf-fetch does not persist validators; the caller owns replaying them. Minimum string length: 1."
+              },
+              {
+                "name": "if_modified_since",
+                "type": "string",
+                "required": false,
+                "description": "Last-Modified validator from a prior fetch of this URL, forwarded verbatim as the `If-Modified-Since` header on the origin request. Only valid with a single URL \u2014 combining with a batch of URLs returns a 400. tf-fetch does not persist validators; the caller owns replaying them. Minimum string length: 1."
+              },
+              {
+                "name": "include_etag_and_last_modified",
+                "type": "boolean",
+                "required": false,
+                "description": "Opt-in to receiving `etag` / `last_modified` validators (and `not_modified` detection) on each result. Defaults to `false` \u2014 tf-fetch omits these fields unless requested. Independent of `if_none_match` / `if_modified_since`: works with a single URL or a batch."
+              },
+              {
+                "name": "include_selectors",
+                "type": "string[]",
+                "required": false,
+                "description": "Array of CSS selectors (1-20 entries, each 1-1000 characters) that scope extracted content (`text`, `links`, `image_links`) to elements matching ANY entry, concatenated in document order. Tag selectors cover semantic sections (`main`, `article`, `nav`); entries may themselves use CSS comma-grouping. Selected content is returned verbatim in the requested format (scripts/styles stripped) \u2014 automatic boilerplate removal is bypassed. Page-level metadata (`title`, `description`, `language`, `author`, `published_date`) still comes from the full document. When some entries match and others do not, the URL still succeeds and the misses are reported in the result's `unmatched_selectors`. When no entry matches anything, that URL fails with the per-URL error code `selector_not_matched` (carrying `unmatched_selectors` and `candidate_selectors` retry hints) \u2014 never a silent full-page fallback. URLs that resolve to direct PDF/CSV downloads fail with `selector_unsupported`. Invalid CSS selector syntax is rejected with a 422. Applied post-fetch: caching and routing are unchanged."
+              },
+              {
+                "name": "exclude_selectors",
+                "type": "string[]",
+                "required": false,
+                "description": "Array of CSS selectors (1-20 entries, each 1-1000 characters) for elements to remove before extraction \u2014 applied before `include_selectors` scopes what remains, so it also prunes inside selected regions. Entries may themselves use CSS comma-grouping. Entries that match nothing are a no-op, never an error, but URLs that resolve to direct PDF/CSV downloads fail with `selector_unsupported`. Invalid CSS selector syntax is rejected with a 422. Applied post-fetch: caching and routing are unchanged."
+              }
             ],
             "response_fields": [
-              { "name": "results", "type": "object[]" },
-              { "name": "errors", "type": "object[]" },
-              { "name": "request_id", "type": "string" },
-              { "name": "results[].url", "type": "string" },
-              { "name": "results[].final_url", "type": "string" },
-              { "name": "results[].title", "type": "string" },
-              { "name": "results[].description", "type": "string" },
-              { "name": "results[].language", "type": "string" },
-              { "name": "results[].format", "type": "string" },
-              { "name": "results[].text", "type": "string" },
-              { "name": "results[].author", "type": "string" },
-              { "name": "results[].published_date", "type": "string" },
-              { "name": "results[].links", "type": "string[]" },
-              { "name": "results[].image_links", "type": "string[]" },
-              { "name": "results[].page_metadata", "type": "object" },
-              { "name": "results[].latency_ms", "type": "number" },
-              { "name": "results[].not_modified", "type": "boolean" },
-              { "name": "results[].etag", "type": "string" },
-              { "name": "results[].last_modified", "type": "string" },
-              { "name": "results[].unmatched_selectors", "type": "string[]" },
-              { "name": "errors[].url", "type": "string" },
-              { "name": "errors[].error", "type": "string" },
-              { "name": "errors[].status", "type": "integer" },
-              { "name": "errors[].unmatched_selectors", "type": "string[]" },
-              { "name": "errors[].candidate_selectors", "type": "string[]" }
+              {
+                "name": "results",
+                "type": "object[]"
+              },
+              {
+                "name": "errors",
+                "type": "object[]"
+              },
+              {
+                "name": "request_id",
+                "type": "string"
+              },
+              {
+                "name": "results[].url",
+                "type": "string"
+              },
+              {
+                "name": "results[].final_url",
+                "type": "string"
+              },
+              {
+                "name": "results[].title",
+                "type": "string"
+              },
+              {
+                "name": "results[].description",
+                "type": "string"
+              },
+              {
+                "name": "results[].language",
+                "type": "string"
+              },
+              {
+                "name": "results[].format",
+                "type": "string"
+              },
+              {
+                "name": "results[].text",
+                "type": "string"
+              },
+              {
+                "name": "results[].author",
+                "type": "string"
+              },
+              {
+                "name": "results[].published_date",
+                "type": "string"
+              },
+              {
+                "name": "results[].links",
+                "type": "string[]"
+              },
+              {
+                "name": "results[].image_links",
+                "type": "string[]"
+              },
+              {
+                "name": "results[].page_metadata",
+                "type": "object"
+              },
+              {
+                "name": "results[].latency_ms",
+                "type": "number"
+              },
+              {
+                "name": "results[].not_modified",
+                "type": "boolean"
+              },
+              {
+                "name": "results[].etag",
+                "type": "string"
+              },
+              {
+                "name": "results[].last_modified",
+                "type": "string"
+              },
+              {
+                "name": "results[].unmatched_selectors",
+                "type": "string[]"
+              },
+              {
+                "name": "errors[].url",
+                "type": "string"
+              },
+              {
+                "name": "errors[].error",
+                "type": "string"
+              },
+              {
+                "name": "errors[].status",
+                "type": "integer"
+              },
+              {
+                "name": "errors[].unmatched_selectors",
+                "type": "string[]"
+              },
+              {
+                "name": "errors[].candidate_selectors",
+                "type": "string[]"
+              }
             ],
-            "schema": { "data": "ExtractContentData", "result": "ExtractContentResult" }
+            "schema": {
+              "data": "ExtractContentData",
+              "result": "ExtractContentResult"
+            }
           },
           "list_fetch_usage": {
             "doc_file": "fetch/list_fetch_usage.md",
@@ -360,39 +1221,139 @@
             "description": "Lists fetch usage records for the authenticated user, with URL, format, status, and metadata for each fetch operation, paginated.",
             "tier": "GET",
             "params": [
-              { "name": "start_after", "type": "string<date-time>", "required": false, "description": "Not described by the provider's docs." },
-              { "name": "end_before", "type": "string<date-time>", "required": false, "description": "Not described by the provider's docs." },
-              { "name": "status", "type": "enum<string>", "required": false, "description": "Available options: `completed`, `failed`." },
-              { "name": "limit", "type": "integer", "required": false, "description": "Default: `100`. Range: 1 <= x <= 1000." },
-              { "name": "page", "type": "integer", "required": false, "description": "Default: `1`. Range: x >= 1." }
+              {
+                "name": "start_after",
+                "type": "string<date-time>",
+                "required": false,
+                "description": "Not described by the provider's docs."
+              },
+              {
+                "name": "end_before",
+                "type": "string<date-time>",
+                "required": false,
+                "description": "Not described by the provider's docs."
+              },
+              {
+                "name": "status",
+                "type": "enum<string>",
+                "required": false,
+                "description": "Available options: `completed`, `failed`."
+              },
+              {
+                "name": "limit",
+                "type": "integer",
+                "required": false,
+                "description": "Default: `100`. Range: 1 <= x <= 1000."
+              },
+              {
+                "name": "page",
+                "type": "integer",
+                "required": false,
+                "description": "Default: `1`. Range: x >= 1."
+              }
             ],
             "response_fields": [
-              { "name": "items", "type": "object[]" },
-              { "name": "total", "type": "integer" },
-              { "name": "limit", "type": "integer" },
-              { "name": "page", "type": "integer" },
-              { "name": "total_pages", "type": "integer" },
-              { "name": "has_more", "type": "boolean" },
-              { "name": "items[].id", "type": "string" },
-              { "name": "items[].url", "type": "string" },
-              { "name": "items[].final_url", "type": "string" },
-              { "name": "items[].title", "type": "string" },
-              { "name": "items[].description", "type": "string" },
-              { "name": "items[].language", "type": "string" },
-              { "name": "items[].author", "type": "string | null" },
-              { "name": "items[].published_date", "type": "string | null" },
-              { "name": "items[].format", "type": "string" },
-              { "name": "items[].status", "type": "string" },
-              { "name": "items[].request_origin", "type": "string" },
-              { "name": "items[].request_id", "type": "string" },
-              { "name": "items[].text_length", "type": "integer" },
-              { "name": "items[].links_count", "type": "integer" },
-              { "name": "items[].image_links_count", "type": "integer" },
-              { "name": "items[].latency_ms", "type": "number" },
-              { "name": "items[].created_at", "type": "string" },
-              { "name": "items[].error", "type": "string | null" }
+              {
+                "name": "items",
+                "type": "object[]"
+              },
+              {
+                "name": "total",
+                "type": "integer"
+              },
+              {
+                "name": "limit",
+                "type": "integer"
+              },
+              {
+                "name": "page",
+                "type": "integer"
+              },
+              {
+                "name": "total_pages",
+                "type": "integer"
+              },
+              {
+                "name": "has_more",
+                "type": "boolean"
+              },
+              {
+                "name": "items[].id",
+                "type": "string"
+              },
+              {
+                "name": "items[].url",
+                "type": "string"
+              },
+              {
+                "name": "items[].final_url",
+                "type": "string"
+              },
+              {
+                "name": "items[].title",
+                "type": "string"
+              },
+              {
+                "name": "items[].description",
+                "type": "string"
+              },
+              {
+                "name": "items[].language",
+                "type": "string"
+              },
+              {
+                "name": "items[].author",
+                "type": "string | null"
+              },
+              {
+                "name": "items[].published_date",
+                "type": "string | null"
+              },
+              {
+                "name": "items[].format",
+                "type": "string"
+              },
+              {
+                "name": "items[].status",
+                "type": "string"
+              },
+              {
+                "name": "items[].request_origin",
+                "type": "string"
+              },
+              {
+                "name": "items[].request_id",
+                "type": "string"
+              },
+              {
+                "name": "items[].text_length",
+                "type": "integer"
+              },
+              {
+                "name": "items[].links_count",
+                "type": "integer"
+              },
+              {
+                "name": "items[].image_links_count",
+                "type": "integer"
+              },
+              {
+                "name": "items[].latency_ms",
+                "type": "number"
+              },
+              {
+                "name": "items[].created_at",
+                "type": "string"
+              },
+              {
+                "name": "items[].error",
+                "type": "string | null"
+              }
             ],
-            "schema": { "data": "FetchUsageListData", "result": "FetchUsageListResult" }
+            "schema": {
+              "data": "FetchUsageListData",
+              "result": "FetchUsageListResult"
+            }
           }
         }
       },
@@ -408,38 +1369,103 @@
             "tier": "GET",
             "params": [],
             "response_fields": [
-              { "name": "available_balance", "type": "string" },
-              { "name": "currency", "type": "enum<string> (USD)" },
-              { "name": "as_of", "type": "string (date-time)" },
-              { "name": "auto_reload", "type": "object | null" },
-              { "name": "pending_top_up", "type": "object | null" },
-              { "name": "rates", "type": "object | null" },
-              { "name": "agent_top_up_url", "type": "string (uri)" }
+              {
+                "name": "available_balance",
+                "type": "string"
+              },
+              {
+                "name": "currency",
+                "type": "enum<string> (USD)"
+              },
+              {
+                "name": "as_of",
+                "type": "string (date-time)"
+              },
+              {
+                "name": "auto_reload",
+                "type": "object | null"
+              },
+              {
+                "name": "pending_top_up",
+                "type": "object | null"
+              },
+              {
+                "name": "rates",
+                "type": "object | null"
+              },
+              {
+                "name": "agent_top_up_url",
+                "type": "string (uri)"
+              }
             ],
-            "schema": { "data": "WalletData", "result": "WalletResult" }
+            "schema": {
+              "data": "WalletData",
+              "result": "WalletResult"
+            }
           },
           "request_wallet_topup": {
             "doc_file": "wallet/request_wallet_topup.md",
             "endpoint": "POST https://agent.tinyfish.ai/v1/wallet/top-up",
-            "description": "Starts a wallet top-up for a given USD amount and returns a payment challenge — this call alone never moves money.",
+            "description": "Starts a wallet top-up for a given USD amount and returns a payment challenge \u2014 this call alone never moves money.",
             "tier": "CREATE",
             "params": [
-              { "name": "amount", "type": "string", "required": true, "description": "Amount to add in USD, from 10.00 to 500.00, in whole cents. Must be passed again, identical, to confirm_wallet_topup." }
+              {
+                "name": "amount",
+                "type": "string",
+                "required": true,
+                "description": "Amount to add in USD, from 10.00 to 500.00, in whole cents. Must be passed again, identical, to confirm_wallet_topup."
+              }
             ],
             "response_fields": [
-              { "name": "challenge_id", "type": "string" },
-              { "name": "realm", "type": "string" },
-              { "name": "method", "type": "string" },
-              { "name": "intent", "type": "string" },
-              { "name": "request_token", "type": "string" },
-              { "name": "expires_at", "type": "string" },
-              { "name": "payment_header_name", "type": "string" },
-              { "name": "type", "type": "string | null" },
-              { "name": "title", "type": "string | null" },
-              { "name": "detail", "type": "string | null" },
-              { "name": "hint", "type": "string | null" }
+              {
+                "name": "challenge_id",
+                "type": "string"
+              },
+              {
+                "name": "realm",
+                "type": "string"
+              },
+              {
+                "name": "method",
+                "type": "string"
+              },
+              {
+                "name": "intent",
+                "type": "string"
+              },
+              {
+                "name": "request_token",
+                "type": "string"
+              },
+              {
+                "name": "expires_at",
+                "type": "string"
+              },
+              {
+                "name": "payment_header_name",
+                "type": "string"
+              },
+              {
+                "name": "type",
+                "type": "string | null"
+              },
+              {
+                "name": "title",
+                "type": "string | null"
+              },
+              {
+                "name": "detail",
+                "type": "string | null"
+              },
+              {
+                "name": "hint",
+                "type": "string | null"
+              }
             ],
-            "schema": { "data": "WalletTopupChallengeData", "result": "WalletTopupChallengeResult" }
+            "schema": {
+              "data": "WalletTopupChallengeData",
+              "result": "WalletTopupChallengeResult"
+            }
           },
           "confirm_wallet_topup": {
             "doc_file": "wallet/confirm_wallet_topup.md",
@@ -447,25 +1473,59 @@
             "description": "Settles a wallet top-up previously started with request_wallet_topup, using a payment_authorization credential obtained from the caller's own external MPP-speaking wallet for that specific challenge.",
             "tier": "UPDATE",
             "params": [
-              { "name": "amount", "type": "string", "required": true, "description": "Must be identical to the amount passed to request_wallet_topup for the challenge being paid." },
-              { "name": "payment_authorization", "type": "string (header: Payment-Authorization)", "required": true, "description": "The payment credential for the challenge from request_wallet_topup, format `Payment <base64url>`." }
+              {
+                "name": "amount",
+                "type": "string",
+                "required": true,
+                "description": "Must be identical to the amount passed to request_wallet_topup for the challenge being paid."
+              },
+              {
+                "name": "payment_authorization",
+                "type": "string (header: Payment-Authorization)",
+                "required": true,
+                "description": "The payment credential for the challenge from request_wallet_topup, format `Payment <base64url>`."
+              }
             ],
             "response_fields": [
-              { "name": "status", "type": "enum<string>: settled, pending" },
-              { "name": "amount", "type": "string" },
-              { "name": "currency", "type": "enum<string> (USD)" },
-              { "name": "payment_reference", "type": "string" },
-              { "name": "ledger_entry_id", "type": "string | null" },
-              { "name": "available_balance", "type": "string | null" },
-              { "name": "hint", "type": "string" }
+              {
+                "name": "status",
+                "type": "enum<string>: settled, pending"
+              },
+              {
+                "name": "amount",
+                "type": "string"
+              },
+              {
+                "name": "currency",
+                "type": "enum<string> (USD)"
+              },
+              {
+                "name": "payment_reference",
+                "type": "string"
+              },
+              {
+                "name": "ledger_entry_id",
+                "type": "string | null"
+              },
+              {
+                "name": "available_balance",
+                "type": "string | null"
+              },
+              {
+                "name": "hint",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "WalletTopupConfirmData", "result": "WalletTopupConfirmResult" }
+            "schema": {
+              "data": "WalletTopupConfirmData",
+              "result": "WalletTopupConfirmResult"
+            }
           }
         }
       },
       "browser_context_profiles": {
         "file": "browser_context_profiles_tools.py",
-        "doc_source": "browser_context_profiles/create_browser_context_profile.md, browser_context_profiles/delete_browser_context_profile.md, browser_context_profiles/update_browser_context_profile.md, browser_context_profiles/create_profile_setup_session.md, browser_context_profiles/cancel_profile_setup_session.md, browser_context_profiles/save_profile_setup_session.md, browser_context_profiles/upload_browser_context_profile_state.md",
+        "doc_source": "browser_context_profiles/create_browser_context_profile.md, browser_context_profiles/delete_browser_context_profile.md, browser_context_profiles/update_browser_context_profile.md, browser_context_profiles/create_profile_setup_session.md, browser_context_profiles/cancel_profile_setup_session.md, browser_context_profiles/save_profile_setup_session.md, browser_context_profiles/upload_browser_context_profile_state.md, browser_context_profiles/delete_profile_domain.md",
         "register_fn": "register_browser_context_profiles_tools",
         "tools": {
           "create_browser_context_profile": {
@@ -474,21 +1534,63 @@
             "description": "Creates a new Browser Context Profile.",
             "tier": "CREATE",
             "params": [
-              { "name": "name", "type": "string", "required": true, "description": "Required string length: 1 - 100." },
-              { "name": "set_as_default", "type": "boolean", "required": false, "description": "" },
-              { "name": "proxy_country_code", "type": "enum<string> | null", "required": false, "description": "Available options: US, GB, CA, AU, DE, FR, IT, ES, NL, JP, SG, BR, IN, null." }
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "Required string length: 1 - 100."
+              },
+              {
+                "name": "set_as_default",
+                "type": "boolean",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "proxy_country_code",
+                "type": "enum<string> | null",
+                "required": false,
+                "description": "Available options: US, GB, CA, AU, DE, FR, IT, ES, NL, JP, SG, BR, IN, null."
+              }
             ],
             "response_fields": [
-              { "name": "id", "type": "string" },
-              { "name": "name", "type": "string" },
-              { "name": "created_at", "type": "string" },
-              { "name": "proxy_country_code", "type": "enum<string> | null" },
-              { "name": "is_default", "type": "boolean" },
-              { "name": "fingerprint_seed", "type": "string" },
-              { "name": "domain_count", "type": "integer" },
-              { "name": "updated_at", "type": "string" }
+              {
+                "name": "id",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "proxy_country_code",
+                "type": "enum<string> | null"
+              },
+              {
+                "name": "is_default",
+                "type": "boolean"
+              },
+              {
+                "name": "fingerprint_seed",
+                "type": "string"
+              },
+              {
+                "name": "domain_count",
+                "type": "integer"
+              },
+              {
+                "name": "updated_at",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "CreateProfileData", "result": "CreateProfileResult" }
+            "schema": {
+              "data": "CreateProfileData",
+              "result": "CreateProfileResult"
+            }
           },
           "delete_browser_context_profile": {
             "doc_file": "browser_context_profiles/delete_browser_context_profile.md",
@@ -496,12 +1598,23 @@
             "description": "Permanently deletes a Browser Context Profile.",
             "tier": "DELETE",
             "params": [
-              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." }
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1."
+              }
             ],
             "response_fields": [
-              { "name": "deleted", "type": "boolean" }
+              {
+                "name": "deleted",
+                "type": "boolean"
+              }
             ],
-            "schema": { "data": "DeleteProfileData", "result": "DeleteProfileResult" }
+            "schema": {
+              "data": "DeleteProfileData",
+              "result": "DeleteProfileResult"
+            }
           },
           "update_browser_context_profile": {
             "doc_file": "browser_context_profiles/update_browser_context_profile.md",
@@ -509,23 +1622,73 @@
             "description": "Updates Browser Context Profile metadata.",
             "tier": "UPDATE",
             "params": [
-              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
-              { "name": "name", "type": "string", "required": false, "description": "Required string length (if provided): 1 - 100." },
-              { "name": "set_as_default", "type": "boolean", "required": false, "description": "" },
-              { "name": "proxy_country_code", "type": "enum<string> | null", "required": false, "description": "Available options: US, GB, CA, AU, DE, FR, IT, ES, NL, JP, SG, BR, IN, null." }
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1."
+              },
+              {
+                "name": "name",
+                "type": "string",
+                "required": false,
+                "description": "Required string length (if provided): 1 - 100."
+              },
+              {
+                "name": "set_as_default",
+                "type": "boolean",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "proxy_country_code",
+                "type": "enum<string> | null",
+                "required": false,
+                "description": "Available options: US, GB, CA, AU, DE, FR, IT, ES, NL, JP, SG, BR, IN, null."
+              }
             ],
             "response_fields": [
-              { "name": "id", "type": "string" },
-              { "name": "name", "type": "string" },
-              { "name": "created_at", "type": "string" },
-              { "name": "domains", "type": "object[]" },
-              { "name": "proxy_country_code", "type": "enum<string> | null" },
-              { "name": "is_default", "type": "boolean" },
-              { "name": "fingerprint_seed", "type": "string" },
-              { "name": "domain_count", "type": "integer" },
-              { "name": "updated_at", "type": "string" }
+              {
+                "name": "id",
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "created_at",
+                "type": "string"
+              },
+              {
+                "name": "domains",
+                "type": "object[]"
+              },
+              {
+                "name": "proxy_country_code",
+                "type": "enum<string> | null"
+              },
+              {
+                "name": "is_default",
+                "type": "boolean"
+              },
+              {
+                "name": "fingerprint_seed",
+                "type": "string"
+              },
+              {
+                "name": "domain_count",
+                "type": "integer"
+              },
+              {
+                "name": "updated_at",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "UpdateProfileData", "result": "UpdateProfileResult" }
+            "schema": {
+              "data": "UpdateProfileData",
+              "result": "UpdateProfileResult"
+            }
           },
           "create_profile_setup_session": {
             "doc_file": "browser_context_profiles/create_profile_setup_session.md",
@@ -533,18 +1696,51 @@
             "description": "Starts a temporary setup browser for a Browser Context Profile.",
             "tier": "CREATE",
             "params": [
-              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
-              { "name": "url", "type": "string", "required": false, "description": "Target URL the browser session will navigate to on startup. Bare domains are automatically prefixed with https://. If omitted, the browser starts at about:blank." },
-              { "name": "timeout_seconds", "type": "integer | null", "required": false, "description": "Inactivity timeout in seconds (5-86400). If omitted, null, or greater than your plan maximum, the plan maximum is used." }
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1."
+              },
+              {
+                "name": "url",
+                "type": "string",
+                "required": false,
+                "description": "Target URL the browser session will navigate to on startup. Bare domains are automatically prefixed with https://. If omitted, the browser starts at about:blank."
+              },
+              {
+                "name": "timeout_seconds",
+                "type": "integer | null",
+                "required": false,
+                "description": "Inactivity timeout in seconds (5-86400). If omitted, null, or greater than your plan maximum, the plan maximum is used."
+              }
             ],
             "response_fields": [
-              { "name": "session_id", "type": "string" },
-              { "name": "cdp_url", "type": "string<uri>" },
-              { "name": "base_url", "type": "string<uri>" },
-              { "name": "timeout_seconds", "type": "integer" },
-              { "name": "expires_at", "type": "string" }
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "cdp_url",
+                "type": "string<uri>"
+              },
+              {
+                "name": "base_url",
+                "type": "string<uri>"
+              },
+              {
+                "name": "timeout_seconds",
+                "type": "integer"
+              },
+              {
+                "name": "expires_at",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "CreateProfileSetupSessionData", "result": "CreateProfileSetupSessionResult" }
+            "schema": {
+              "data": "CreateProfileSetupSessionData",
+              "result": "CreateProfileSetupSessionResult"
+            }
           },
           "cancel_profile_setup_session": {
             "doc_file": "browser_context_profiles/cancel_profile_setup_session.md",
@@ -552,13 +1748,29 @@
             "description": "Cancels a running Browser Context Profile setup session and discards unsaved setup state.",
             "tier": "UPDATE",
             "params": [
-              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
-              { "name": "session_id", "type": "string", "required": true, "description": "Minimum string length: 1." }
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1."
+              },
+              {
+                "name": "session_id",
+                "type": "string",
+                "required": true,
+                "description": "Minimum string length: 1."
+              }
             ],
             "response_fields": [
-              { "name": "cancelled", "type": "boolean" }
+              {
+                "name": "cancelled",
+                "type": "boolean"
+              }
             ],
-            "schema": { "data": "CancelProfileSetupSessionData", "result": "CancelProfileSetupSessionResult" }
+            "schema": {
+              "data": "CancelProfileSetupSessionData",
+              "result": "CancelProfileSetupSessionResult"
+            }
           },
           "save_profile_setup_session": {
             "doc_file": "browser_context_profiles/save_profile_setup_session.md",
@@ -566,24 +1778,75 @@
             "description": "Captures cookies, local storage, and session storage from a running setup session into the Browser Context Profile.",
             "tier": "UPDATE",
             "params": [
-              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
-              { "name": "session_id", "type": "string", "required": true, "description": "Minimum string length: 1." },
-              { "name": "signed_in_sites", "type": "string[]", "required": false, "description": "Sites the user says they signed into during this setup, as hosts or URLs. Maximum array length: 20. Maximum string length: 253." }
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1."
+              },
+              {
+                "name": "session_id",
+                "type": "string",
+                "required": true,
+                "description": "Minimum string length: 1."
+              },
+              {
+                "name": "signed_in_sites",
+                "type": "string[]",
+                "required": false,
+                "description": "Sites the user says they signed into during this setup, as hosts or URLs. Maximum array length: 20. Maximum string length: 253."
+              }
             ],
             "response_fields": [
-              { "name": "domains_updated", "type": "string[]" },
-              { "name": "domains_failed", "type": "string[]" },
-              { "name": "cookie_count", "type": "integer" },
-              { "name": "domains_skipped", "type": "object" },
-              { "name": "pages_captured", "type": "integer" },
-              { "name": "target_reads_skipped", "type": "integer" },
-              { "name": "cleanup_failed", "type": "boolean" },
-              { "name": "cleanup_kind", "type": "string" },
-              { "name": "signed_in_sites", "type": "string[]" },
-              { "name": "sign_in", "type": "object" },
-              { "name": "user_confirmed_sites", "type": "object" }
+              {
+                "name": "domains_updated",
+                "type": "string[]"
+              },
+              {
+                "name": "domains_failed",
+                "type": "string[]"
+              },
+              {
+                "name": "cookie_count",
+                "type": "integer"
+              },
+              {
+                "name": "domains_skipped",
+                "type": "object"
+              },
+              {
+                "name": "pages_captured",
+                "type": "integer"
+              },
+              {
+                "name": "target_reads_skipped",
+                "type": "integer"
+              },
+              {
+                "name": "cleanup_failed",
+                "type": "boolean"
+              },
+              {
+                "name": "cleanup_kind",
+                "type": "string"
+              },
+              {
+                "name": "signed_in_sites",
+                "type": "string[]"
+              },
+              {
+                "name": "sign_in",
+                "type": "object"
+              },
+              {
+                "name": "user_confirmed_sites",
+                "type": "object"
+              }
             ],
-            "schema": { "data": "SaveProfileSetupSessionData", "result": "SaveProfileSetupSessionResult" }
+            "schema": {
+              "data": "SaveProfileSetupSessionData",
+              "result": "SaveProfileSetupSessionResult"
+            }
           },
           "upload_browser_context_profile_state": {
             "doc_file": "browser_context_profiles/upload_browser_context_profile_state.md",
@@ -591,20 +1854,88 @@
             "description": "Uploads cookies, local storage, and session storage directly into a Browser Context Profile.",
             "tier": "UPDATE",
             "params": [
-              { "name": "profileId", "type": "string", "required": true, "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1." },
-              { "name": "cookies", "type": "object[]", "required": true, "description": "Maximum array length: 3000. Each entry: name, value, domain, path (required); httpOnly, secure, expires, sourceScheme, sourcePort, partitionKey (optional)." },
-              { "name": "localStorage", "type": "object[]", "required": false, "description": "Maximum array length: 100. Each entry: origin, items (list of {name, value})." },
-              { "name": "sessionStorage", "type": "object[]", "required": false, "description": "Maximum array length: 100. Each entry: origin, items (list of {name, value})." }
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter. Minimum string length: 1."
+              },
+              {
+                "name": "cookies",
+                "type": "object[]",
+                "required": true,
+                "description": "Maximum array length: 3000. Each entry: name, value, domain, path (required); httpOnly, secure, expires, sourceScheme, sourcePort, partitionKey (optional)."
+              },
+              {
+                "name": "localStorage",
+                "type": "object[]",
+                "required": false,
+                "description": "Maximum array length: 100. Each entry: origin, items (list of {name, value})."
+              },
+              {
+                "name": "sessionStorage",
+                "type": "object[]",
+                "required": false,
+                "description": "Maximum array length: 100. Each entry: origin, items (list of {name, value})."
+              }
             ],
             "response_fields": [
-              { "name": "domains_updated", "type": "string[]" },
-              { "name": "domains_failed", "type": "string[]" },
-              { "name": "cookie_count", "type": "integer" },
-              { "name": "domains_skipped", "type": "object" }
+              {
+                "name": "domains_updated",
+                "type": "string[]"
+              },
+              {
+                "name": "domains_failed",
+                "type": "string[]"
+              },
+              {
+                "name": "cookie_count",
+                "type": "integer"
+              },
+              {
+                "name": "domains_skipped",
+                "type": "object"
+              }
             ],
-            "schema": { "data": "UploadProfileStateData", "result": "UploadProfileStateResult" }
+            "schema": {
+              "data": "UploadProfileStateData",
+              "result": "UploadProfileStateResult"
+            }
+          },
+          "delete_profile_domain": {
+            "doc_file": "browser_context_profiles/delete_profile_domain.md",
+            "endpoint": "DELETE https://agent.tinyfish.ai/v1/profiles/{profileId}/domains/{domain}",
+            "description": "Removes one saved domain's state (e.g. cookies for a specific site) from a Browser Context Profile.",
+            "tier": "DELETE",
+            "params": [
+              {
+                "name": "profileId",
+                "type": "string",
+                "required": true,
+                "description": "Browser Context Profile ID. Path parameter."
+              },
+              {
+                "name": "domain",
+                "type": "string",
+                "required": true,
+                "description": "Domain to remove from the Browser Context Profile. Path parameter."
+              }
+            ],
+            "response_fields": [
+              {
+                "name": "deleted",
+                "type": "boolean"
+              }
+            ],
+            "schema": {
+              "data": "DeleteProfileDomainData",
+              "result": "DeleteProfileDomainResult"
+            }
           }
-        }
+        },
+        "built_from": [
+          "delete_profile_domain.md"
+        ]
       },
       "vault": {
         "file": "vault_tools.py",
@@ -617,20 +1948,65 @@
             "description": "Connect a supported password manager and immediately sync display-safe credential metadata.",
             "tier": "CREATE",
             "params": [
-              { "name": "provider", "type": "enum<string> (1password, bitwarden)", "required": true, "description": "Vault provider identifier." },
-              { "name": "token", "type": "string", "required": false, "description": "1Password service account token. Required when provider is 1password." },
-              { "name": "clientId", "type": "string", "required": false, "description": "Bitwarden client ID. Required when provider is bitwarden." },
-              { "name": "clientSecret", "type": "string", "required": false, "description": "Bitwarden client secret. Required when provider is bitwarden." },
-              { "name": "masterPassword", "type": "string", "required": false, "description": "Bitwarden master password. Required when provider is bitwarden." },
-              { "name": "serverUrl", "type": "string<uri>", "required": false, "description": "Optional self-hosted Bitwarden server URL." }
+              {
+                "name": "provider",
+                "type": "enum<string> (1password, bitwarden)",
+                "required": true,
+                "description": "Vault provider identifier."
+              },
+              {
+                "name": "token",
+                "type": "string",
+                "required": false,
+                "description": "1Password service account token. Required when provider is 1password."
+              },
+              {
+                "name": "clientId",
+                "type": "string",
+                "required": false,
+                "description": "Bitwarden client ID. Required when provider is bitwarden."
+              },
+              {
+                "name": "clientSecret",
+                "type": "string",
+                "required": false,
+                "description": "Bitwarden client secret. Required when provider is bitwarden."
+              },
+              {
+                "name": "masterPassword",
+                "type": "string",
+                "required": false,
+                "description": "Bitwarden master password. Required when provider is bitwarden."
+              },
+              {
+                "name": "serverUrl",
+                "type": "string<uri>",
+                "required": false,
+                "description": "Optional self-hosted Bitwarden server URL."
+              }
             ],
             "response_fields": [
-              { "name": "connectionId", "type": "string" },
-              { "name": "connected", "type": "enum<boolean> (true)" },
-              { "name": "provider", "type": "enum<string> (1password, bitwarden)" },
-              { "name": "items", "type": "object[]" }
+              {
+                "name": "connectionId",
+                "type": "string"
+              },
+              {
+                "name": "connected",
+                "type": "enum<boolean> (true)"
+              },
+              {
+                "name": "provider",
+                "type": "enum<string> (1password, bitwarden)"
+              },
+              {
+                "name": "items",
+                "type": "object[]"
+              }
             ],
-            "schema": { "data": "ConnectVaultProviderData", "result": "ConnectVaultProviderResult" }
+            "schema": {
+              "data": "ConnectVaultProviderData",
+              "result": "ConnectVaultProviderResult"
+            }
           },
           "disconnect_vault_provider": {
             "doc_file": "vault/disconnect_vault_provider.md",
@@ -638,13 +2014,27 @@
             "description": "Disconnect a vault provider and remove its stored enabled items.",
             "tier": "DELETE",
             "params": [
-              { "name": "connectionId", "type": "string", "required": true, "description": "Path parameter." }
+              {
+                "name": "connectionId",
+                "type": "string",
+                "required": true,
+                "description": "Path parameter."
+              }
             ],
             "response_fields": [
-              { "name": "disconnected", "type": "enum<boolean> (true)" },
-              { "name": "connectionId", "type": "string" }
+              {
+                "name": "disconnected",
+                "type": "enum<boolean> (true)"
+              },
+              {
+                "name": "connectionId",
+                "type": "string"
+              }
             ],
-            "schema": { "data": "DisconnectVaultProviderData", "result": "DisconnectVaultProviderResult" }
+            "schema": {
+              "data": "DisconnectVaultProviderData",
+              "result": "DisconnectVaultProviderResult"
+            }
           },
           "sync_vault_items": {
             "doc_file": "vault/sync_vault_items.md",
@@ -653,10 +2043,19 @@
             "tier": "UPDATE_MANY",
             "params": [],
             "response_fields": [
-              { "name": "items", "type": "object[]" },
-              { "name": "sync_summary", "type": "object" }
+              {
+                "name": "items",
+                "type": "object[]"
+              },
+              {
+                "name": "sync_summary",
+                "type": "object"
+              }
             ],
-            "schema": { "data": "SyncVaultItemsData", "result": "SyncVaultItemsResult" }
+            "schema": {
+              "data": "SyncVaultItemsData",
+              "result": "SyncVaultItemsResult"
+            }
           }
         }
       },
@@ -671,26 +2070,101 @@
             "description": "Search, evaluate sources, and synthesize a cited report from a natural-language query.",
             "tier": "CREATE",
             "params": [
-              { "name": "query", "type": "string", "required": true, "description": "Research question. Length 1-2000." },
-              { "name": "mode", "type": "enum<string> (auto, standard, deep, max)", "required": false, "description": "Depth of research. Omitted selects deep; legacy auto selects standard." },
-              { "name": "stream", "type": "boolean", "required": false, "description": "Emit report text through synthesis_delta events as it is written." },
-              { "name": "output_language", "type": "string", "required": false, "description": "BCP 47 language tag for the report." },
-              { "name": "weak_sources_enabled", "type": "boolean", "required": false, "description": "Allow relevant social and community sources." },
-              { "name": "domain_type", "type": "enum<string> (web, news, research_paper)", "required": false, "description": "Source pool to research over." },
-              { "name": "after_date", "type": "string<date>", "required": false, "description": "Include results on or after this date (YYYY-MM-DD)." },
-              { "name": "before_date", "type": "string<date>", "required": false, "description": "Include results on or before this date (YYYY-MM-DD)." },
-              { "name": "recency_minutes", "type": "integer", "required": false, "description": "Include results from the last 1-5,256,000 minutes. Not combinable with date filters." },
-              { "name": "domain_filter", "type": "object", "required": false, "description": "Domain preferences. Each list accepts at most 150 entries." },
-              { "name": "prior_run_id", "type": "string", "required": false, "description": "Seed this run with a completed report and its evidence." },
-              { "name": "session_id", "type": "string<uuid>", "required": false, "description": "Continue a standard-mode session. Mutually exclusive with prior_run_id." }
+              {
+                "name": "query",
+                "type": "string",
+                "required": true,
+                "description": "Research question. Length 1-2000."
+              },
+              {
+                "name": "mode",
+                "type": "enum<string> (auto, standard, deep, max)",
+                "required": false,
+                "description": "Depth of research. Omitted selects deep; legacy auto selects standard."
+              },
+              {
+                "name": "stream",
+                "type": "boolean",
+                "required": false,
+                "description": "Emit report text through synthesis_delta events as it is written."
+              },
+              {
+                "name": "output_language",
+                "type": "string",
+                "required": false,
+                "description": "BCP 47 language tag for the report."
+              },
+              {
+                "name": "weak_sources_enabled",
+                "type": "boolean",
+                "required": false,
+                "description": "Allow relevant social and community sources."
+              },
+              {
+                "name": "domain_type",
+                "type": "enum<string> (web, news, research_paper)",
+                "required": false,
+                "description": "Source pool to research over."
+              },
+              {
+                "name": "after_date",
+                "type": "string<date>",
+                "required": false,
+                "description": "Include results on or after this date (YYYY-MM-DD)."
+              },
+              {
+                "name": "before_date",
+                "type": "string<date>",
+                "required": false,
+                "description": "Include results on or before this date (YYYY-MM-DD)."
+              },
+              {
+                "name": "recency_minutes",
+                "type": "integer",
+                "required": false,
+                "description": "Include results from the last 1-5,256,000 minutes. Not combinable with date filters."
+              },
+              {
+                "name": "domain_filter",
+                "type": "object",
+                "required": false,
+                "description": "Domain preferences. Each list accepts at most 150 entries."
+              },
+              {
+                "name": "prior_run_id",
+                "type": "string",
+                "required": false,
+                "description": "Seed this run with a completed report and its evidence."
+              },
+              {
+                "name": "session_id",
+                "type": "string<uuid>",
+                "required": false,
+                "description": "Continue a standard-mode session. Mutually exclusive with prior_run_id."
+              }
             ],
             "response_fields": [
-              { "name": "research_run_id", "type": "string" },
-              { "name": "result", "type": "string | null" },
-              { "name": "citations", "type": "string[]" },
-              { "name": "iterations_seen", "type": "integer[]" }
+              {
+                "name": "research_run_id",
+                "type": "string"
+              },
+              {
+                "name": "result",
+                "type": "string | null"
+              },
+              {
+                "name": "citations",
+                "type": "string[]"
+              },
+              {
+                "name": "iterations_seen",
+                "type": "integer[]"
+              }
             ],
-            "schema": { "data": "ResearchStreamData", "result": "ResearchStreamResult" }
+            "schema": {
+              "data": "ResearchStreamData",
+              "result": "ResearchStreamResult"
+            }
           },
           "start_research_async": {
             "doc_file": "research/start_research_async.md",
@@ -698,24 +2172,93 @@
             "description": "Enqueue research and return its ID after durable dispatch.",
             "tier": "CREATE",
             "params": [
-              { "name": "query", "type": "string", "required": true, "description": "Research question. Length 1-2000." },
-              { "name": "mode", "type": "enum<string> (auto, standard, deep, max)", "required": false, "description": "Depth of research. Omitted selects deep; legacy auto selects standard." },
-              { "name": "stream", "type": "boolean", "required": false, "description": "Emit report text through synthesis_delta events as it is written." },
-              { "name": "output_language", "type": "string", "required": false, "description": "BCP 47 language tag for the report." },
-              { "name": "weak_sources_enabled", "type": "boolean", "required": false, "description": "Allow relevant social and community sources." },
-              { "name": "domain_type", "type": "enum<string> (web, news, research_paper)", "required": false, "description": "Source pool to research over." },
-              { "name": "after_date", "type": "string<date>", "required": false, "description": "Include results on or after this date (YYYY-MM-DD)." },
-              { "name": "before_date", "type": "string<date>", "required": false, "description": "Include results on or before this date (YYYY-MM-DD)." },
-              { "name": "recency_minutes", "type": "integer", "required": false, "description": "Include results from the last 1-5,256,000 minutes. Not combinable with date filters." },
-              { "name": "domain_filter", "type": "object", "required": false, "description": "Domain preferences. Each list accepts at most 150 entries." },
-              { "name": "prior_run_id", "type": "string", "required": false, "description": "Seed this run with a completed report and its evidence." },
-              { "name": "session_id", "type": "string<uuid>", "required": false, "description": "Continue a standard-mode session. Mutually exclusive with prior_run_id." }
+              {
+                "name": "query",
+                "type": "string",
+                "required": true,
+                "description": "Research question. Length 1-2000."
+              },
+              {
+                "name": "mode",
+                "type": "enum<string> (auto, standard, deep, max)",
+                "required": false,
+                "description": "Depth of research. Omitted selects deep; legacy auto selects standard."
+              },
+              {
+                "name": "stream",
+                "type": "boolean",
+                "required": false,
+                "description": "Emit report text through synthesis_delta events as it is written."
+              },
+              {
+                "name": "output_language",
+                "type": "string",
+                "required": false,
+                "description": "BCP 47 language tag for the report."
+              },
+              {
+                "name": "weak_sources_enabled",
+                "type": "boolean",
+                "required": false,
+                "description": "Allow relevant social and community sources."
+              },
+              {
+                "name": "domain_type",
+                "type": "enum<string> (web, news, research_paper)",
+                "required": false,
+                "description": "Source pool to research over."
+              },
+              {
+                "name": "after_date",
+                "type": "string<date>",
+                "required": false,
+                "description": "Include results on or after this date (YYYY-MM-DD)."
+              },
+              {
+                "name": "before_date",
+                "type": "string<date>",
+                "required": false,
+                "description": "Include results on or before this date (YYYY-MM-DD)."
+              },
+              {
+                "name": "recency_minutes",
+                "type": "integer",
+                "required": false,
+                "description": "Include results from the last 1-5,256,000 minutes. Not combinable with date filters."
+              },
+              {
+                "name": "domain_filter",
+                "type": "object",
+                "required": false,
+                "description": "Domain preferences. Each list accepts at most 150 entries."
+              },
+              {
+                "name": "prior_run_id",
+                "type": "string",
+                "required": false,
+                "description": "Seed this run with a completed report and its evidence."
+              },
+              {
+                "name": "session_id",
+                "type": "string<uuid>",
+                "required": false,
+                "description": "Continue a standard-mode session. Mutually exclusive with prior_run_id."
+              }
             ],
             "response_fields": [
-              { "name": "research_run_id", "type": "string<uuid>" },
-              { "name": "error", "type": "object | null" }
+              {
+                "name": "research_run_id",
+                "type": "string<uuid>"
+              },
+              {
+                "name": "error",
+                "type": "object | null"
+              }
             ],
-            "schema": { "data": "StartResearchAsyncData", "result": "StartResearchAsyncResult" }
+            "schema": {
+              "data": "StartResearchAsyncData",
+              "result": "StartResearchAsyncResult"
+            }
           },
           "attach_research_progress": {
             "doc_file": "research/attach_research_progress.md",
@@ -723,16 +2266,41 @@
             "description": "Reconnect to a research run's live progress stream, resuming with Last-Event-ID when provided.",
             "tier": "GET",
             "params": [
-              { "name": "research_run_id", "type": "string", "required": true, "description": "Research run identifier. Path parameter." },
-              { "name": "last_event_id", "type": "string (header: Last-Event-ID)", "required": false, "description": "Resume the stream after this event ID." }
+              {
+                "name": "research_run_id",
+                "type": "string",
+                "required": true,
+                "description": "Research run identifier. Path parameter."
+              },
+              {
+                "name": "last_event_id",
+                "type": "string (header: Last-Event-ID)",
+                "required": false,
+                "description": "Resume the stream after this event ID."
+              }
             ],
             "response_fields": [
-              { "name": "research_run_id", "type": "string" },
-              { "name": "result", "type": "string | null" },
-              { "name": "citations", "type": "string[]" },
-              { "name": "iterations_seen", "type": "integer[]" }
+              {
+                "name": "research_run_id",
+                "type": "string"
+              },
+              {
+                "name": "result",
+                "type": "string | null"
+              },
+              {
+                "name": "citations",
+                "type": "string[]"
+              },
+              {
+                "name": "iterations_seen",
+                "type": "integer[]"
+              }
             ],
-            "schema": { "data": "ResearchStreamData", "result": "ResearchStreamResult" }
+            "schema": {
+              "data": "ResearchStreamData",
+              "result": "ResearchStreamResult"
+            }
           },
           "list_research_runs": {
             "doc_file": "research/list_research_runs.md",
@@ -740,33 +2308,119 @@
             "description": "List saved research runs with optional filtering by status, query text, and date range.",
             "tier": "GET",
             "params": [
-              { "name": "status", "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)", "required": false, "description": "Filter by research run status." },
-              { "name": "query", "type": "string", "required": false, "description": "Filter by query text (case-insensitive partial match). Max length 500." },
-              { "name": "created_after", "type": "string<date-time>", "required": false, "description": "Filter runs created after this ISO 8601 timestamp." },
-              { "name": "created_before", "type": "string<date-time>", "required": false, "description": "Filter runs created before this ISO 8601 timestamp." },
-              { "name": "sort_direction", "type": "enum<string> (asc, desc)", "required": false, "description": "Sort order by created_at. Default desc." },
-              { "name": "cursor", "type": "string", "required": false, "description": "Cursor for pagination (from previous response). Must be replayed with the same sort_direction used to generate it." },
-              { "name": "limit", "type": "integer", "required": false, "description": "Maximum number of results to return (1-100). Default 20." }
+              {
+                "name": "status",
+                "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)",
+                "required": false,
+                "description": "Filter by research run status."
+              },
+              {
+                "name": "query",
+                "type": "string",
+                "required": false,
+                "description": "Filter by query text (case-insensitive partial match). Max length 500."
+              },
+              {
+                "name": "created_after",
+                "type": "string<date-time>",
+                "required": false,
+                "description": "Filter runs created after this ISO 8601 timestamp."
+              },
+              {
+                "name": "created_before",
+                "type": "string<date-time>",
+                "required": false,
+                "description": "Filter runs created before this ISO 8601 timestamp."
+              },
+              {
+                "name": "sort_direction",
+                "type": "enum<string> (asc, desc)",
+                "required": false,
+                "description": "Sort order by created_at. Default desc."
+              },
+              {
+                "name": "cursor",
+                "type": "string",
+                "required": false,
+                "description": "Cursor for pagination (from previous response). Must be replayed with the same sort_direction used to generate it."
+              },
+              {
+                "name": "limit",
+                "type": "integer",
+                "required": false,
+                "description": "Maximum number of results to return (1-100). Default 20."
+              }
             ],
             "response_fields": [
-              { "name": "data[].research_run_id", "type": "string" },
-              { "name": "data[].status", "type": "enum<string>" },
-              { "name": "data[].query", "type": "string" },
-              { "name": "data[].quick_result", "type": "object | null" },
-              { "name": "data[].quick_result_summary", "type": "string | null" },
-              { "name": "data[].deep_result", "type": "object | null" },
-              { "name": "data[].run_ids", "type": "string[]" },
-              { "name": "data[].created_at", "type": "string | null" },
-              { "name": "data[].completed_at", "type": "string | null" },
-              { "name": "data[].error", "type": "object | null" },
-              { "name": "data[].research_plan", "type": "object | null" },
-              { "name": "data[].evidence", "type": "object[] | null" },
-              { "name": "data[].iterations", "type": "integer | null" },
-              { "name": "pagination.total", "type": "integer" },
-              { "name": "pagination.next_cursor", "type": "string" },
-              { "name": "pagination.has_more", "type": "boolean" }
+              {
+                "name": "data[].research_run_id",
+                "type": "string"
+              },
+              {
+                "name": "data[].status",
+                "type": "enum<string>"
+              },
+              {
+                "name": "data[].query",
+                "type": "string"
+              },
+              {
+                "name": "data[].quick_result",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].quick_result_summary",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].deep_result",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].run_ids",
+                "type": "string[]"
+              },
+              {
+                "name": "data[].created_at",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].completed_at",
+                "type": "string | null"
+              },
+              {
+                "name": "data[].error",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].research_plan",
+                "type": "object | null"
+              },
+              {
+                "name": "data[].evidence",
+                "type": "object[] | null"
+              },
+              {
+                "name": "data[].iterations",
+                "type": "integer | null"
+              },
+              {
+                "name": "pagination.total",
+                "type": "integer"
+              },
+              {
+                "name": "pagination.next_cursor",
+                "type": "string"
+              },
+              {
+                "name": "pagination.has_more",
+                "type": "boolean"
+              }
             ],
-            "schema": { "data": "ListResearchRunsData", "result": "ListResearchRunsResult" }
+            "schema": {
+              "data": "ListResearchRunsData",
+              "result": "ListResearchRunsResult"
+            }
           },
           "get_research_run": {
             "doc_file": "research/get_research_run.md",
@@ -774,24 +2428,71 @@
             "description": "Retrieve one saved research run, including the plan, evidence, and per-iteration working state.",
             "tier": "GET",
             "params": [
-              { "name": "research_run_id", "type": "string", "required": true, "description": "Research run identifier. Path parameter." }
+              {
+                "name": "research_run_id",
+                "type": "string",
+                "required": true,
+                "description": "Research run identifier. Path parameter."
+              }
             ],
             "response_fields": [
-              { "name": "research_run_id", "type": "string" },
-              { "name": "status", "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)" },
-              { "name": "query", "type": "string" },
-              { "name": "quick_result", "type": "object | null" },
-              { "name": "quick_result_summary", "type": "string | null" },
-              { "name": "deep_result", "type": "object | null" },
-              { "name": "run_ids", "type": "string[]" },
-              { "name": "created_at", "type": "string | null" },
-              { "name": "completed_at", "type": "string | null" },
-              { "name": "error", "type": "object | null" },
-              { "name": "research_plan", "type": "object | null" },
-              { "name": "evidence", "type": "object[] | null" },
-              { "name": "iterations", "type": "integer | null" }
+              {
+                "name": "research_run_id",
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)"
+              },
+              {
+                "name": "query",
+                "type": "string"
+              },
+              {
+                "name": "quick_result",
+                "type": "object | null"
+              },
+              {
+                "name": "quick_result_summary",
+                "type": "string | null"
+              },
+              {
+                "name": "deep_result",
+                "type": "object | null"
+              },
+              {
+                "name": "run_ids",
+                "type": "string[]"
+              },
+              {
+                "name": "created_at",
+                "type": "string | null"
+              },
+              {
+                "name": "completed_at",
+                "type": "string | null"
+              },
+              {
+                "name": "error",
+                "type": "object | null"
+              },
+              {
+                "name": "research_plan",
+                "type": "object | null"
+              },
+              {
+                "name": "evidence",
+                "type": "object[] | null"
+              },
+              {
+                "name": "iterations",
+                "type": "integer | null"
+              }
             ],
-            "schema": { "data": "ResearchRunData", "result": "GetResearchRunResult" }
+            "schema": {
+              "data": "ResearchRunData",
+              "result": "GetResearchRunResult"
+            }
           },
           "cancel_research_run": {
             "doc_file": "research/cancel_research_run.md",
@@ -799,20 +2500,37 @@
             "description": "Cancel a running research run.",
             "tier": "UPDATE",
             "params": [
-              { "name": "research_run_id", "type": "string", "required": true, "description": "Research run identifier. Path parameter." }
+              {
+                "name": "research_run_id",
+                "type": "string",
+                "required": true,
+                "description": "Research run identifier. Path parameter."
+              }
             ],
             "response_fields": [
-              { "name": "research_run_id", "type": "string" },
-              { "name": "status", "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)" },
-              { "name": "cancelled", "type": "boolean" }
+              {
+                "name": "research_run_id",
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "type": "enum<string> (RUNNING, COMPLETED, FAILED, CANCELLED, TIMED_OUT, QUEUED)"
+              },
+              {
+                "name": "cancelled",
+                "type": "boolean"
+              }
             ],
-            "schema": { "data": "CancelResearchRunData", "result": "CancelResearchRunResult" }
+            "schema": {
+              "data": "CancelResearchRunData",
+              "result": "CancelResearchRunResult"
+            }
           }
         }
       },
       "browser": {
         "file": "browser_tools.py",
-        "doc_source": "browser/list_browser_session_usage.md",
+        "doc_source": "browser/list_browser_session_usage.md, browser/create_browser_session.md, browser/terminate_browser_session.md",
         "register_fn": "register_browser_tools",
         "tools": {
           "list_browser_session_usage": {
@@ -821,24 +2539,142 @@
             "description": "Lists Tetra browser session usage for the authenticated user, returning session telemetry including duration, data transfer, mode, and status.",
             "tier": "GET",
             "params": [
-              { "name": "session_id", "type": "string", "required": false, "description": "" },
-              { "name": "start_after", "type": "string<date-time>", "required": false, "description": "" },
-              { "name": "end_before", "type": "string<date-time>", "required": false, "description": "" },
-              { "name": "status", "type": "enum<string> (running, ended)", "required": false, "description": "" },
-              { "name": "limit", "type": "integer", "required": false, "description": "Default: 100. Range: 1-1000." },
-              { "name": "page", "type": "integer", "required": false, "description": "Default: 1. Range: x >= 1." }
+              {
+                "name": "session_id",
+                "type": "string",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "start_after",
+                "type": "string<date-time>",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "end_before",
+                "type": "string<date-time>",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "status",
+                "type": "enum<string> (running, ended)",
+                "required": false,
+                "description": ""
+              },
+              {
+                "name": "limit",
+                "type": "integer",
+                "required": false,
+                "description": "Default: 100. Range: 1-1000."
+              },
+              {
+                "name": "page",
+                "type": "integer",
+                "required": false,
+                "description": "Default: 1. Range: x >= 1."
+              }
             ],
             "response_fields": [
-              { "name": "items", "type": "object[]" },
-              { "name": "total", "type": "integer" },
-              { "name": "limit", "type": "integer" },
-              { "name": "page", "type": "integer" },
-              { "name": "total_pages", "type": "integer" },
-              { "name": "has_more", "type": "boolean" }
+              {
+                "name": "items",
+                "type": "object[]"
+              },
+              {
+                "name": "total",
+                "type": "integer"
+              },
+              {
+                "name": "limit",
+                "type": "integer"
+              },
+              {
+                "name": "page",
+                "type": "integer"
+              },
+              {
+                "name": "total_pages",
+                "type": "integer"
+              },
+              {
+                "name": "has_more",
+                "type": "boolean"
+              }
             ],
-            "schema": { "data": "ListBrowserSessionUsageData", "result": "ListBrowserSessionUsageResult" }
+            "schema": {
+              "data": "ListBrowserSessionUsageData",
+              "result": "ListBrowserSessionUsageResult"
+            }
+          },
+          "create_browser_session": {
+            "doc_file": "browser/create_browser_session.md",
+            "endpoint": "POST https://api.browser.tinyfish.ai/",
+            "description": "Creates a remote tf-browser session and returns CDP connection details. Connect to the browser via CDP WebSocket at cdp_url. Egresses through the TinyFish residential proxy in the US by default.",
+            "tier": "CREATE",
+            "params": [
+              {
+                "name": "url",
+                "type": "string",
+                "required": false,
+                "description": "Target URL the browser session navigates to on startup. Bare domains are auto-prefixed with https://. If omitted, starts at about:blank."
+              },
+              {
+                "name": "timeout_seconds",
+                "type": "integer | null",
+                "required": false,
+                "description": "Inactivity timeout in seconds, 5-86400. If omitted, null, or above plan maximum, the plan maximum is used."
+              },
+              {
+                "name": "proxy_config",
+                "type": "object",
+                "required": false,
+                "description": "Proxy for the session. Fields: enabled, type (tinyfish|custom), country_code (tinyfish only), url/username/password (custom only)."
+              }
+            ],
+            "response_fields": [
+              {
+                "name": "session_id",
+                "type": "string"
+              },
+              {
+                "name": "cdp_url",
+                "type": "string (uri)"
+              },
+              {
+                "name": "base_url",
+                "type": "string (uri)"
+              }
+            ],
+            "schema": {
+              "data": "CreateBrowserSessionData",
+              "result": "CreateBrowserSessionResult"
+            }
+          },
+          "terminate_browser_session": {
+            "doc_file": "browser/terminate_browser_session.md",
+            "endpoint": "DELETE https://api.browser.tinyfish.ai/{sessionId}",
+            "description": "Terminates a remote browser session immediately. If the session is already ended this call is idempotent and still returns 204.",
+            "tier": "DELETE",
+            "params": [
+              {
+                "name": "sessionId",
+                "type": "string (path)",
+                "required": true,
+                "description": "Session ID to terminate \u2014 the session_id returned by create_browser_session."
+              }
+            ],
+            "response_fields": [],
+            "schema": {
+              "data": null,
+              "result": "TerminateBrowserSessionResult"
+            }
           }
-        }
+        },
+        "built_from": [
+          "create_browser_session.md",
+          "terminate_browser_session.md"
+        ]
       }
     }
   },
