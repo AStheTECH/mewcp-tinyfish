@@ -15,7 +15,7 @@
   },
   "built_from": {
     "automation": ["run_browser_automation_sse.md", "start_automation_async.md", "run_browser_automation_sync.md"],
-    "runs": ["list_runs.md", "get_run.md", "cancel_run.md", "get_step_screenshot.md", "get_step_html_snapshot.md"],
+    "runs": ["list_runs.md", "get_run.md", "cancel_run.md", "get_step_screenshot.md", "get_step_html_snapshot.md", "get_runs_by_ids.md", "cancel_runs_by_ids.md"],
     "search": ["search_web.md", "list_search_usage.md"],
     "fetch": ["fetch_extract_content.md", "list_fetch_usage.md"],
     "wallet": ["get_wallet.md", "request_wallet_topup.md", "confirm_wallet_topup.md"],
@@ -26,7 +26,8 @@
       "create_profile_setup_session.md",
       "cancel_profile_setup_session.md",
       "save_profile_setup_session.md",
-      "upload_browser_context_profile_state.md"
+      "upload_browser_context_profile_state.md",
+      "delete_profile_domain.md"
     ],
     "vault": ["connect_vault_provider.md", "disconnect_vault_provider.md", "sync_vault_items.md"],
     "research": [
@@ -37,7 +38,7 @@
       "get_research_run.md",
       "cancel_research_run.md"
     ],
-    "browser": ["list_browser_session_usage.md"]
+    "browser": ["list_browser_session_usage.md", "create_browser_session.md", "terminate_browser_session.md"]
   },
   "validation_rounds": 3,
   "validation_passed": true,
