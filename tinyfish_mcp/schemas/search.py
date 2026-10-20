@@ -37,10 +37,10 @@ class SearchUsageItem(BaseModel):
     request_id: str
     query: str
     status_code: int
-    result_count: int
-    results: list[SearchResultItem]
+    result_count: int | None = None
+    results: list[SearchResultItem] | None = None
     cached: bool | None = None
-    response_size_bytes: int
+    response_size_bytes: int | None = None
     created_at: str
 
 

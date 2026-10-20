@@ -78,7 +78,10 @@ class ResearchRunPagination(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     total: int
-    next_cursor: str = Field(description="Pass as `cursor` on the next `list_research_runs` call to fetch the following page.")
+    next_cursor: str | None = Field(
+        default=None,
+        description="Pass as `cursor` on the next `list_research_runs` call to fetch the following page. Null on the last page.",
+    )
     has_more: bool
 
 

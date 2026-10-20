@@ -14,9 +14,9 @@ class BrowserSessionUsageItem(BaseModel):
     mode: str = Field(description="Browser session mode, e.g. `tf-browser` for Tetra browser sessions.")
     start_time: str
     end_time: str | None = None
-    duration_ms: int
-    proxy_trg_rx_bytes: int
-    proxy_trg_tx_bytes: int
+    duration_ms: int | None = Field(default=None, description="Null while the session is still `running`.")
+    proxy_trg_rx_bytes: int | None = Field(default=None, description="Null while the session is still `running`.")
+    proxy_trg_tx_bytes: int | None = Field(default=None, description="Null while the session is still `running`.")
     status: str = Field(description="One of `running`, `ended`.")
     created_at: str
     updated_at: str

@@ -4,7 +4,7 @@
     "name": "mewcp-tinyfish",
     "package": "tinyfish_mcp",
     "auth": "static",
-    "version": "v1.2.0",
+    "version": "v1.2.1",
     "api_base": null
   },
   "tools": {
@@ -485,7 +485,7 @@
               },
               {
                 "name": "pagination.next_cursor",
-                "type": "string"
+                "type": "string | null"
               },
               {
                 "name": "pagination.has_more",
@@ -992,11 +992,11 @@
               },
               {
                 "name": "items[].result_count",
-                "type": "integer"
+                "type": "integer | null"
               },
               {
                 "name": "items[].results",
-                "type": "object[]"
+                "type": "object[] | null"
               },
               {
                 "name": "items[].cached",
@@ -1004,7 +1004,7 @@
               },
               {
                 "name": "items[].response_size_bytes",
-                "type": "integer"
+                "type": "integer | null"
               },
               {
                 "name": "items[].created_at",
@@ -1816,11 +1816,11 @@
               },
               {
                 "name": "pages_captured",
-                "type": "integer"
+                "type": "integer | null"
               },
               {
                 "name": "target_reads_skipped",
-                "type": "integer"
+                "type": "integer | null"
               },
               {
                 "name": "cleanup_failed",
@@ -1828,7 +1828,7 @@
               },
               {
                 "name": "cleanup_kind",
-                "type": "string"
+                "type": "string | null"
               },
               {
                 "name": "signed_in_sites",
@@ -2410,7 +2410,7 @@
               },
               {
                 "name": "pagination.next_cursor",
-                "type": "string"
+                "type": "string | null"
               },
               {
                 "name": "pagination.has_more",

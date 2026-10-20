@@ -95,10 +95,10 @@ class SaveProfileSetupSessionData(BaseModel):
     domains_skipped: dict[str, Any] = Field(
         description="Breakdown of skipped writes: `cookies_skipped`, `local_storage_skipped`, `session_storage_skipped`, `blob_too_large`."
     )
-    pages_captured: int
-    target_reads_skipped: int
+    pages_captured: int | None = None
+    target_reads_skipped: int | None = None
     cleanup_failed: bool
-    cleanup_kind: str
+    cleanup_kind: str | None = None
     signed_in_sites: list[str] | None = Field(
         default=None,
         description="Sites this save recorded as signed in, from sign-in cookies set during setup. Omitted when sign-in tracking is not enabled for the account.",
