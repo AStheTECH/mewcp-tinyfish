@@ -513,7 +513,7 @@
                 "name": "screenshots",
                 "type": "enum<string>",
                 "required": false,
-                "description": "Screenshot delivery mode. `url`: absolute URLs to screenshot images. `base64`: inline data URIs. `none`: omit screenshots. Default: `url`."
+                "description": "Screenshot delivery mode (string enum, not boolean). `url`: absolute URLs to screenshot images. `none`: omit screenshots. Default: `url`. For inline base64 bytes, use get_step_screenshot on an individual step instead."
               },
               {
                 "name": "html",

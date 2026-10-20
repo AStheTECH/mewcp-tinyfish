@@ -131,8 +131,9 @@ def register_runs_tools(mcp: FastMCP) -> None:
         name="get_run",
         description=(
             "Retrieves full details for a single automation run by ID, including its status, goal, "
-            "extracted result, step-by-step trace, and any error information. Use `screenshots` and "
-            "`html` to control whether screenshot and HTML snapshot URLs are included in the response."
+            "extracted result, step-by-step trace, and any error information. `screenshots` and "
+            "`html` are each a delivery-mode enum (not a boolean) controlling whether step "
+            "screenshot/HTML-snapshot URLs are included in the response."
         ),
         annotations=ToolAnnotations(readOnlyHint=True, openWorldHint=True),
     )
@@ -140,20 +141,20 @@ def register_runs_tools(mcp: FastMCP) -> None:
         id: str = Field(description="Run ID to retrieve. Must match `^[A-Za-z0-9_-]+$` (alphanumeric, underscore, hyphen)."),
         screenshots: str | None = Field(
             default=None,
-            description="Screenshot delivery mode. One of `url` (absolute image URLs), `base64` (inline data URIs), `none` (omit screenshots). Defaults to `url`.",
+            description="Screenshot delivery mode — a string enum, not a boolean. One of `url` (absolute image URLs) or `none` (omit screenshots). Defaults to `url`. For inline base64 image bytes, use `get_step_screenshot` on an individual step instead.",
         ),
         html: str | None = Field(
             default=None,
-            description="HTML snapshot delivery mode. One of `url` (absolute snapshot URLs, only non-null when the run had HTML capture enabled), `none` (omit HTML URLs). Defaults to `url`.",
+            description="HTML snapshot delivery mode — a string enum, not a boolean. One of `url` (absolute snapshot URLs, only non-null when the run had HTML capture enabled) or `none` (omit HTML URLs). Defaults to `url`.",
         ),
     ) -> RunResult:
         tlog = ToolLogger(logger, "get_run")
 
         if not _ID_PATTERN.fullmatch(id):
             return _err(RunResult, tlog, "VALIDATION_ERROR", "id must match ^[A-Za-z0-9_-]+$", 400)
-        if screenshots is not None and screenshots not in ("url", "base64", "none"):
+        if screenshots is not None and screenshots not in ("url", "none"):
             return _err(RunResult, tlog, "VALIDATION_ERROR",
-                        "screenshots must be one of 'url', 'base64', 'none'", 400)
+                        "screenshots must be one of 'url', 'none'", 400)
         if html is not None and html not in ("url", "none"):
             return _err(RunResult, tlog, "VALIDATION_ERROR", "html must be one of 'url', 'none'", 400)
 
