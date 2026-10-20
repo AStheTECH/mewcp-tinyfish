@@ -33,7 +33,7 @@ class WebSearchResult(ToolResult):
 class SearchUsageItem(BaseModel):
     model_config = ConfigDict(extra="allow")
 
-    id: int
+    id: str
     request_id: str | None = None
     query: str | None = None
     status_code: int | None = None

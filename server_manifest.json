@@ -976,7 +976,7 @@
               },
               {
                 "name": "items[].id",
-                "type": "integer"
+                "type": "string"
               },
               {
                 "name": "items[].request_id",
