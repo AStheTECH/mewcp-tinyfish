@@ -477,7 +477,7 @@
               },
               {
                 "name": "data[].profile_hint",
-                "type": "object"
+                "type": "object | null"
               },
               {
                 "name": "pagination.total",
@@ -589,7 +589,7 @@
               },
               {
                 "name": "profile_hint",
-                "type": "object"
+                "type": "object | null"
               }
             ],
             "schema": {
@@ -980,15 +980,15 @@
               },
               {
                 "name": "items[].request_id",
-                "type": "string"
+                "type": "string | null"
               },
               {
                 "name": "items[].query",
-                "type": "string"
+                "type": "string | null"
               },
               {
                 "name": "items[].status_code",
-                "type": "integer"
+                "type": "integer | null"
               },
               {
                 "name": "items[].result_count",
@@ -1008,7 +1008,7 @@
               },
               {
                 "name": "items[].created_at",
-                "type": "string"
+                "type": "string | null"
               }
             ],
             "schema": {

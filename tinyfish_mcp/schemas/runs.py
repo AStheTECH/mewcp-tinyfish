@@ -51,9 +51,10 @@ class RunData(BaseModel):
         default=None,
         description="Presigned URL to the run's video recording, or null if none is available. Expires 15 minutes after being issued.",
     )
-    steps: list[RunStep]
-    profile_hint: dict[str, Any] = Field(
-        description="Nudge suggesting a Browser Context Profile setup when a failed run is likely solvable that way."
+    steps: list[RunStep] = Field(default_factory=list)
+    profile_hint: dict[str, Any] | None = Field(
+        default=None,
+        description="Nudge suggesting a Browser Context Profile setup when a failed run is likely solvable that way. Only present on some failed runs.",
     )
 
 

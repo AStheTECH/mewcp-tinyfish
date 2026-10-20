@@ -9,17 +9,17 @@ class BrowserSessionUsageItem(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     session_id: str
-    user_id: str
-    sub_user_id: str
-    mode: str = Field(description="Browser session mode, e.g. `tf-browser` for Tetra browser sessions.")
-    start_time: str
+    user_id: str | None = None
+    sub_user_id: str | None = None
+    mode: str | None = Field(default=None, description="Browser session mode, e.g. `tf-browser` for Tetra browser sessions.")
+    start_time: str | None = None
     end_time: str | None = None
     duration_ms: int | None = Field(default=None, description="Null while the session is still `running`.")
     proxy_trg_rx_bytes: int | None = Field(default=None, description="Null while the session is still `running`.")
     proxy_trg_tx_bytes: int | None = Field(default=None, description="Null while the session is still `running`.")
-    status: str = Field(description="One of `running`, `ended`.")
-    created_at: str
-    updated_at: str
+    status: str | None = Field(default=None, description="One of `running`, `ended`.")
+    created_at: str | None = None
+    updated_at: str | None = None
 
 
 class ListBrowserSessionUsageData(BaseModel):

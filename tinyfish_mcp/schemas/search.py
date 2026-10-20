@@ -34,14 +34,14 @@ class SearchUsageItem(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     id: int
-    request_id: str
-    query: str
-    status_code: int
+    request_id: str | None = None
+    query: str | None = None
+    status_code: int | None = None
     result_count: int | None = None
     results: list[SearchResultItem] | None = None
     cached: bool | None = None
     response_size_bytes: int | None = None
-    created_at: str
+    created_at: str | None = None
 
 
 class SearchUsageListData(BaseModel):
